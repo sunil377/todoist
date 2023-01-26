@@ -1,0 +1,16 @@
+{
+    "name": "Todoist",
+    "short_name": "todo",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#C24F3D",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/assets/todo.svg",
+            "sizes": "32x32",
+            "type": "image/svg"
+        }
+    ]
+}
