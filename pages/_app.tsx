@@ -1,11 +1,11 @@
-import ErrorFallback from 'components/ErrorFallback'
+import { ErrorFallback } from '@/components/ErrorBoundary'
 import AuthProvider from 'context/AuthContext'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
 import Head from 'next/head'
 import { ErrorBoundary } from 'react-error-boundary'
-import 'styles/globals.css'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import 'styles/globals.css'
 
 export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
     getLayout?: (page: React.ReactElement) => React.ReactNode
@@ -29,7 +29,10 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     return (
         <>
             <Head>
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1"
+                />
                 <link rel="icon" href="/assets/todo.svg" />
                 <link rel="manifest" href="/manifest.webmanifest" />
                 <meta name="theme-color" content="#C24F3D" />
@@ -37,7 +40,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
 
             <ErrorBoundary FallbackComponent={ErrorFallback}>
                 <QueryClientProvider client={client}>
-                    <AuthProvider>{getLayout(<Component {...pageProps} />)}</AuthProvider>
+                    <AuthProvider>
+                        {getLayout(<Component {...pageProps} />)}
+                    </AuthProvider>
                 </QueryClientProvider>
             </ErrorBoundary>
         </>

@@ -1,4 +1,4 @@
-import AddTask from '@/components/AddTask'
+import AddTask from '@/components/AddTask/AddTask'
 import { render, screen } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from 'react-query'
 

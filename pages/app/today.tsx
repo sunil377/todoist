@@ -1,8 +1,10 @@
 import AddTask from '@/components/AddTask'
+import Task from '@/components/TaskListItem'
 import { adminDB } from '@/config/firebaseAdmin'
 import { format } from 'date-fns'
 import MainLayout from 'layout/MainLayout'
 import { GetStaticPathsContext, InferGetStaticPropsType } from 'next'
+import Head from 'next/head'
 import NextLink from 'next/link'
 import PlusIcon from 'public/assets/plus.svg'
 import SettingsIcon from 'public/assets/settings.svg'
@@ -15,9 +17,6 @@ const Today: NextPageWithLayout<
     console.log('props', props)
 
     const [currentDate, setCurrentDate] = useState<Date | null>(null)
-    const [isTaskOpened, setTaskOpen] = useState(false)
-
-    const handleTask = useCallback(() => setTaskOpen(false), [])
 
     useEffect(() => {
         setCurrentDate(new Date())
@@ -25,6 +24,9 @@ const Today: NextPageWithLayout<
 
     return (
         <main className="mx-auto  w-10/12 space-y-8 py-8">
+            <Head>
+                <title>Today: Todoist</title>
+            </Head>
             <div className="flex justify-between">
                 <h1>
                     <strong className="mr-2 text-xl">Today</strong>
@@ -33,8 +35,7 @@ const Today: NextPageWithLayout<
                     </span>
                 </h1>
                 <button
-                    aria-label="view"
-                    className="text-gray-500"
+                    className="text-gray-500 outline-none focus-visible:ring-1 focus-visible:ring-black"
                     data-tooltip="view"
                 >
                     <SettingsIcon aria-hidden />
@@ -46,12 +47,23 @@ const Today: NextPageWithLayout<
 
                     <NextLink
                         href="/reshedule"
-                        className="text-skin-main hover:underline"
+                        className="text-skin-main outline-none hover:underline focus-visible:ring-1 focus-visible:ring-black"
                     >
                         Reschedule
                     </NextLink>
                 </div>
-                <ul className="flex flex-col"></ul>
+                <ul className="flex flex-col">
+                    {props.status === 'success'
+                        ? props.tasks.map((task) => (
+                              <Task
+                                  key={task.id}
+                                  title={task.title}
+                                  description={task.description}
+                                  dueDate={task.dueDate}
+                              />
+                          ))
+                        : null}
+                </ul>
             </section>
 
             <section className="space-y-2">
@@ -63,24 +75,32 @@ const Today: NextPageWithLayout<
                     {currentDate && format(currentDate, 'EEEE')}
                 </h3>
 
-                {isTaskOpened ? (
-                    <AddTask onClose={handleTask} />
-                ) : (
-                    <button
-                        className="group w-full justify-start gap-x-2 border-t-gray-300 py-1 text-xsm outline-none focus-visible:border-blue-300"
-                        onClick={() => setTaskOpen(true)}
-                    >
-                        <PlusIcon
-                            className="scale-90 transform text-skin-main group-hover:rounded-full group-hover:bg-skin-main group-hover:text-white"
-                            aria-hidden
-                        />
-                        <span className="font-normal text-gray-400 group-hover:text-skin-dark">
-                            Add Task
-                        </span>
-                    </button>
-                )}
+                <RenderTaskComponent />
             </section>
         </main>
+    )
+}
+
+function RenderTaskComponent() {
+    const [isTaskOpened, setTaskOpen] = useState(false)
+
+    const handleTask = useCallback(() => setTaskOpen(false), [])
+
+    return isTaskOpened ? (
+        <AddTask onClose={handleTask} />
+    ) : (
+        <button
+            className="group w-full justify-start gap-x-2 border-t-gray-300 py-1 text-xsm outline-none focus-visible:border-blue-300"
+            onClick={() => setTaskOpen(true)}
+        >
+            <PlusIcon
+                className="scale-90 transform rounded-full text-skin-main transition-colors group-hover:bg-skin-main group-hover:text-white"
+                aria-hidden
+            />
+            <span className="font-normal text-gray-400 transition-colors group-hover:text-skin-dark">
+                Add Task
+            </span>
+        </button>
     )
 }
 
@@ -91,7 +111,7 @@ export async function getStaticProps(context: GetStaticPathsContext) {
         if (response.empty) {
             return {
                 props: {
-                    status: 'failed',
+                    status: 'failed' as const,
                     message: 'No Document Found',
                 },
             }
@@ -109,11 +129,16 @@ export async function getStaticProps(context: GetStaticPathsContext) {
 
             return {
                 props: JSON.parse(props),
+            } as {
+                props: {
+                    status: 'success'
+                    tasks: FirebaseFirestore.DocumentData[]
+                }
             }
         } catch (error) {
             return {
                 props: {
-                    status: 'failed',
+                    status: 'failed' as const,
                     message:
                         'Error during parse JSON oject' +
                         (error as Error).message,
@@ -123,7 +148,7 @@ export async function getStaticProps(context: GetStaticPathsContext) {
     } catch (error) {
         return {
             props: {
-                status: 'failed',
+                status: 'failed' as const,
                 messgae: 'error geting document: ' + (error as Error).message,
             },
         }

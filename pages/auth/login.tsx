@@ -1,6 +1,10 @@
 import FacebookAuth from 'feature/auth/FacebookAuth'
 import { FirebaseError } from 'firebase/app'
-import { fetchSignInMethodsForEmail, signInWithEmailAndPassword, useDeviceLanguage } from 'firebase/auth'
+import {
+    fetchSignInMethodsForEmail,
+    signInWithEmailAndPassword,
+    useDeviceLanguage,
+} from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import Head from 'next/head'
 import NextImage from 'next/image'
@@ -9,9 +13,9 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { FaApple } from 'react-icons/fa'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
-import FormikError from '../../components/FormikError'
-import FormikInput from '../../components/FormikInput'
-import FormikSubmitButton from '../../components/FormikSubmitButton'
+import FormikError from '../../components/Formik/FormikError'
+import FormikInput from '../../components/Formik/FormikInput'
+import FormikSubmitButton from '../../components/Formik/FormikSubmitButton'
 import { auth } from '../../config/firebase'
 import GoogleAuth from '../../feature/auth/GoogleAuth'
 import { parseZodErrorToFormikError } from '../../helpers/util'
@@ -28,11 +32,13 @@ function Login() {
             </Head>
 
             <div className="mx-auto grid max-w-5xl lg:grid-cols-2">
-                <div className="">
+                <div>
                     <main className="mx-auto max-w-md px-8">
-                        <div className="flex gap-x-2 py-8">
-                            <TodoSVG />
-                            <span className="hidden text-2xl font-bold text-red-500 sm:inline">todoist</span>
+                        <div className="my-6 inline-flex items-center gap-x-1 text-2xl">
+                            <TodoSVG aria-hidden />
+                            <span className="font-bold text-red-500 opacity-0 sm:opacity-100">
+                                todoist
+                            </span>
                         </div>
 
                         <div className="pt-24 pb-10">
@@ -41,14 +47,14 @@ function Login() {
                             {/* social site authentication */}
                             <section className="mt-8 flex flex-col gap-y-3">
                                 {/* google auth */}
-                                <GoogleAuth className="gap-x-3 rounded-md p-2 text-lg font-bold hover:bg-gray-200 focus-visible:bg-gray-200" />
+                                <GoogleAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
 
                                 {/* fb auth */}
-                                <FacebookAuth className="gap-x-3 rounded-md p-2 text-lg font-bold hover:bg-gray-200 focus-visible:bg-gray-200" />
+                                <FacebookAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
 
                                 {/* apple auth */}
-                                <button className="gap-x-3 rounded-md p-2 text-lg font-bold hover:bg-gray-200 focus-visible:bg-gray-200">
-                                    <FaApple />
+                                <button className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70">
+                                    <FaApple className="text-2xl" />
                                     Continue with Apples
                                 </button>
                             </section>
@@ -58,18 +64,26 @@ function Login() {
                                 <AuthenticationForm />
                             </section>
 
-                            <NextLink href="/forgot-password" legacyBehavior>
-                                <a className="mt-4 inline-block text-xsm text-gray-600 underline">Forgot your password?</a>
+                            <NextLink
+                                href="/forgot-password"
+                                className="mt-4 inline-block text-xsm text-gray-600 underline"
+                            >
+                                Forgot your password?
                             </NextLink>
 
                             <p className="mt-4 text-xsm">
-                                By continuing with Google, Apple, or Email, you agree to Todoists Terms of Service and Privacy Policy.
+                                By continuing with Google, Apple, or Email, you
+                                agree to Todoists Terms of Service and Privacy
+                                Policy.
                             </p>
 
                             <div className="mt-4 text-center text-xsm">
-                                Don’t have an account?&nbsp;
-                                <NextLink href="/auth/signup" legacyBehavior>
-                                    <a className="underline">Sign Up</a>
+                                Don&apos;t have an account?&nbsp;
+                                <NextLink
+                                    href="/auth/signup"
+                                    className="underline"
+                                >
+                                    Sign Up
                                 </NextLink>
                             </div>
                         </div>
@@ -97,7 +111,10 @@ function AuthenticationForm() {
                 password: '',
             }}
             validate={parseZodErrorToFormikError}
-            onSubmit={async function ({ email, password }, { setSubmitting, setFieldError }) {
+            onSubmit={async function (
+                { email, password },
+                { setSubmitting, setFieldError },
+            ) {
                 try {
                     await signInWithEmailAndPassword(auth, email, password)
                     router.push('/')
@@ -106,16 +123,27 @@ function AuthenticationForm() {
 
                     if (firebaseError instanceof FirebaseError) {
                         if (firebaseError.code === 'auth/wrong-password') {
-                            const method = await fetchSignInMethodsForEmail(auth, email)
+                            const method = await fetchSignInMethodsForEmail(
+                                auth,
+                                email,
+                            )
                             if (method[0] === 'google.com') {
-                                setFieldError('other', 'your email is registered as GoogleSignin. \nTry continue with google.')
+                                setFieldError(
+                                    'other',
+                                    'your email is registered as GoogleSignin. \nTry continue with google.',
+                                )
                                 return
                             }
                         }
                         console.log(firebaseError)
                         console.log(firebaseError.customData)
 
-                        setFieldError('other', firebaseError.code.replace(/auth\//gi, '').replace(/\-/gi, ' '))
+                        setFieldError(
+                            'other',
+                            firebaseError.code
+                                .replace(/auth\//gi, '')
+                                .replace(/\-/gi, ' '),
+                        )
                     }
                 }
             }}
@@ -148,11 +176,21 @@ function AuthenticationForm() {
                             className="w-full bg-transparent font-bold outline-none placeholder:font-normal placeholder:text-gray-500"
                             autoComplete="current-password"
                         />
-                        <button className="rounded-full border-0 p-0.5" type="button" onClick={() => setHidden((prev) => !prev)}>
+                        <button
+                            className="rounded-full border-0 p-0.5"
+                            type="button"
+                            onClick={() => setHidden((prev) => !prev)}
+                        >
                             {isHidden ? (
-                                <MdVisibility className="h-5 w-5" aria-label="show password" />
+                                <MdVisibility
+                                    className="h-5 w-5"
+                                    aria-label="show password"
+                                />
                             ) : (
-                                <MdVisibilityOff className="h-5 w-5" aria-label="hide password" />
+                                <MdVisibilityOff
+                                    className="h-5 w-5"
+                                    aria-label="hide password"
+                                />
                             )}
                         </button>
                     </div>

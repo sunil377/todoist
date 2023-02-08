@@ -1,11 +1,14 @@
-import FormikError from 'components/FormikError'
-import FormikInput from 'components/FormikInput'
-import FormikSubmitButton from 'components/FormikSubmitButton'
+import FormikError from '@/components/Formik/FormikError'
+import FormikInput from '@/components/Formik/FormikInput'
+import FormikSubmitButton from '@/components/Formik/FormikSubmitButton'
 import { auth } from 'config/firebase'
 import FacebookAuth from 'feature/auth/FacebookAuth'
 import GoogleAuth from 'feature/auth/GoogleAuth'
 import { FirebaseError } from 'firebase/app'
-import { createUserWithEmailAndPassword, useDeviceLanguage } from 'firebase/auth'
+import {
+    createUserWithEmailAndPassword,
+    useDeviceLanguage,
+} from 'firebase/auth'
 import { Form, Formik } from 'formik'
 import { parseZodErrorToFormikError } from 'helpers/util'
 import Head from 'next/head'
@@ -33,25 +36,27 @@ function Signup() {
             <div className="mx-auto grid max-w-5xl lg:grid-cols-2">
                 <div className="">
                     <main className="mx-auto max-w-md px-8">
-                        <div className="flex gap-x-2 py-8">
-                            <TodoSVG />
-                            <span className="hidden text-2xl font-bold text-red-500 sm:inline">todoist</span>
+                        <div className="inline-flex items-center gap-x-2 py-8 text-2xl">
+                            <TodoSVG aria-hidden />
+                            <span className="font-bold text-red-500 opacity-0 sm:opacity-100">
+                                todoist
+                            </span>
                         </div>
 
-                        <div className="pt-28 pb-10">
+                        <div className="mt-20 pb-10">
                             <h2 className="text-3xl font-bold">Sign Up</h2>
 
                             {/* social site authentication */}
                             <section className="mt-8 flex flex-col gap-y-3">
                                 {/* google auth */}
-                                <GoogleAuth className="gap-x-3 rounded-md p-2 text-lg font-bold hover:bg-gray-200 focus-visible:bg-gray-200" />
+                                <GoogleAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
 
                                 {/* fb auth */}
-                                <FacebookAuth className="gap-x-3 rounded-md p-2 text-lg font-bold hover:bg-gray-200 focus-visible:bg-gray-200" />
+                                <FacebookAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
 
                                 {/* apple auth */}
-                                <button className="gap-x-3 rounded-md p-2 text-lg font-bold hover:bg-gray-200 focus-visible:bg-gray-200">
-                                    <FaApple />
+                                <button className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70">
+                                    <FaApple className="text-2xl" />
                                     Continue with Apples
                                 </button>
                             </section>
@@ -62,13 +67,18 @@ function Signup() {
                             </section>
 
                             <p className="mt-4 text-xsm">
-                                By continuing with Google, Apple, or Email, you agree to Todoists Terms of Service and Privacy Policy.
+                                By continuing with Google, Apple, or Email, you
+                                agree to Todoists Terms of Service and Privacy
+                                Policy.
                             </p>
 
                             <div className="mt-6 text-center text-xsm">
                                 Already signed up? &nbsp;
-                                <NextLink href="/auth/login" legacyBehavior>
-                                    <a className="underline">Go to login</a>
+                                <NextLink
+                                    href="/auth/login"
+                                    className="underline"
+                                >
+                                    Go to login
                                 </NextLink>
                             </div>
                         </div>
@@ -125,7 +135,10 @@ function AuthenticationForm() {
                 password: '',
             }}
             validate={parseZodErrorToFormikError}
-            onSubmit={async ({ email, password }, { setSubmitting, setFieldError }) => {
+            onSubmit={async (
+                { email, password },
+                { setSubmitting, setFieldError },
+            ) => {
                 try {
                     await createUserWithEmailAndPassword(auth, email, password)
                     router.push('/')
@@ -133,12 +146,21 @@ function AuthenticationForm() {
                     setSubmitting(false)
                     if (firebaseError instanceof FirebaseError) {
                         console.log(firebaseError)
-                        setFieldError('other', firebaseError.code.replace(/auth\//gi, '').replace(/\-/gi, ' '))
+                        setFieldError(
+                            'other',
+                            firebaseError.code
+                                .replace(/auth\//gi, '')
+                                .replace(/\-/gi, ' '),
+                        )
                     }
                 }
             }}
         >
-            <Form noValidate autoCorrect="off" className="flex flex-col gap-y-4">
+            <Form
+                noValidate
+                autoCorrect="off"
+                className="flex flex-col gap-y-4"
+            >
                 {/* Email field */}
                 <div className="flex flex-col gap-y-0.5 rounded-xl border px-3 py-2 focus-within:border-gray-600">
                     <label htmlFor="email" className="text-xsm font-medium">
@@ -167,11 +189,21 @@ function AuthenticationForm() {
                             className="w-full bg-transparent font-bold outline-none placeholder:font-normal placeholder:text-gray-500"
                             autoComplete="new-password"
                         />
-                        <button className="rounded-full border-0 p-0.5" type="button" onClick={() => setHidden((prev) => !prev)}>
+                        <button
+                            className="rounded-full border-0 p-0.5"
+                            type="button"
+                            onClick={() => setHidden((prev) => !prev)}
+                        >
                             {isHidden ? (
-                                <MdVisibility className="h-5 w-5" aria-label="show password" />
+                                <MdVisibility
+                                    className="h-5 w-5"
+                                    aria-label="show password"
+                                />
                             ) : (
-                                <MdVisibilityOff className="h-5 w-5" aria-label="hide password" />
+                                <MdVisibilityOff
+                                    className="h-5 w-5"
+                                    aria-label="hide password"
+                                />
                             )}
                         </button>
                     </div>
@@ -179,7 +211,7 @@ function AuthenticationForm() {
 
                 {/* submit button */}
 
-                <FormikSubmitButton className="rounded-md border-transparent bg-red-500 py-2 text-xl font-bold text-white hover:bg-red-600">
+                <FormikSubmitButton className="rounded-md border-transparent bg-red-600 py-2 text-lg font-bold text-white hover:bg-red-700">
                     Sign up with Email
                 </FormikSubmitButton>
 
