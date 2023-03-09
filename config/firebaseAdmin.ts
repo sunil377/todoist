@@ -1,8 +1,6 @@
-import { cert, getApp, initializeApp, ServiceAccount } from 'firebase-admin/app'
+import { cert, getApp, initializeApp } from 'firebase-admin/app'
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore } from 'firebase-admin/firestore'
-
-import secratekey from '../todo-app-fdbf6-firebase-adminsdk-dvncb-f0394389dd.json'
 
 let app
 
@@ -11,7 +9,11 @@ try {
 } catch (error) {
     app = initializeApp(
         {
-            credential: cert(secratekey as ServiceAccount),
+            credential: cert({
+                clientEmail: process.env.client_email,
+                privateKey: process.env.private_key,
+                projectId: process.env.project_id,
+            }),
         },
         'default',
     )

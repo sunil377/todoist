@@ -2,6 +2,8 @@
 
 yarn.lock
 
+todo-app*.json
+
 # dependencies
 /node_modules
 /.pnp
