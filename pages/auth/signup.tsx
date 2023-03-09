@@ -9,8 +9,10 @@ import {
     createUserWithEmailAndPassword,
     useDeviceLanguage,
 } from 'firebase/auth'
+import { getDoc, setDoc } from 'firebase/firestore'
 import { Form, Formik } from 'formik'
 import { parseZodErrorToFormikError } from 'helpers/util'
+import { getProjectRef } from 'hooks/services'
 import Head from 'next/head'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
@@ -21,7 +23,6 @@ import banner3 from 'public/assets/signup-banner-3.jpg'
 import banner4 from 'public/assets/signup-banner-4.jpg'
 import TodoSVG from 'public/assets/todo.svg'
 import { useState } from 'react'
-import { FaApple } from 'react-icons/fa'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 
 function Signup() {
@@ -34,7 +35,7 @@ function Signup() {
             </Head>
 
             <div className="mx-auto grid max-w-5xl lg:grid-cols-2">
-                <div className="">
+                <div>
                     <main className="mx-auto max-w-md px-8">
                         <div className="inline-flex items-center gap-x-2 py-8 text-2xl">
                             <TodoSVG aria-hidden />
@@ -43,22 +44,16 @@ function Signup() {
                             </span>
                         </div>
 
-                        <div className="mt-20 pb-10">
+                        <div className="mt-12 pb-10">
                             <h2 className="text-3xl font-bold">Sign Up</h2>
 
                             {/* social site authentication */}
-                            <section className="mt-8 flex flex-col gap-y-3">
+                            <section className="mt-10 flex flex-col gap-y-3">
                                 {/* google auth */}
-                                <GoogleAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
+                                <GoogleAuth className="inline-flex items-center justify-center gap-x-2 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
 
                                 {/* fb auth */}
-                                <FacebookAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
-
-                                {/* apple auth */}
-                                <button className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70">
-                                    <FaApple className="text-2xl" />
-                                    Continue with Apples
-                                </button>
+                                <FacebookAuth className="inline-flex items-center justify-center gap-x-2 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
                             </section>
 
                             {/* email auth */}
@@ -76,7 +71,7 @@ function Signup() {
                                 Already signed up? &nbsp;
                                 <NextLink
                                     href="/auth/login"
-                                    className="underline"
+                                    className="rounded border-2 border-transparent p-0.5 underline focus:outline-none focus-visible:border-blue-500 focus-visible:ring focus-visible:ring-blue-100"
                                 >
                                     Go to login
                                 </NextLink>
@@ -140,18 +135,34 @@ function AuthenticationForm() {
                 { setSubmitting, setFieldError },
             ) => {
                 try {
-                    await createUserWithEmailAndPassword(auth, email, password)
+                    const { user } = await createUserWithEmailAndPassword(
+                        auth,
+                        email,
+                        password,
+                    )
+
+                    const { exists } = await getDoc(
+                        getProjectRef(user.uid, 'inbox'),
+                    )
+                    if (!exists()) {
+                        await setDoc(getProjectRef(user.uid, 'inbox'), {
+                            title: 'inbox',
+                        })
+                    }
                     router.push('/')
                 } catch (firebaseError) {
                     setSubmitting(false)
+                    console.log(firebaseError)
+
                     if (firebaseError instanceof FirebaseError) {
-                        console.log(firebaseError)
                         setFieldError(
                             'other',
                             firebaseError.code
                                 .replace(/auth\//gi, '')
                                 .replace(/\-/gi, ' '),
                         )
+
+                        alert(firebaseError.message)
                     }
                 }
             }}
@@ -211,7 +222,7 @@ function AuthenticationForm() {
 
                 {/* submit button */}
 
-                <FormikSubmitButton className="rounded-md border-transparent bg-red-600 py-2 text-lg font-bold text-white hover:bg-red-700">
+                <FormikSubmitButton className="rounded-md bg-red-500 py-2 text-xl font-bold text-white hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-skin-main focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
                     Sign up with Email
                 </FormikSubmitButton>
 

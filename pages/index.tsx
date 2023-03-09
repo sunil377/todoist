@@ -12,7 +12,11 @@ export default function Home() {
                 <title>Log in to Todoist</title>
             </Head>
             <main className="py-4 px-8">
-                <p>{currentUser ? `you are login ${currentUser.email}` : 'unauthorized'}</p>
+                <p>
+                    {currentUser
+                        ? `you are login ${currentUser.email}`
+                        : 'unauthorized'}
+                </p>
                 <button onClick={logOut}>log out</button>
             </main>
         </>

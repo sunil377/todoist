@@ -1,137 +1,272 @@
-import { FieldMetaProps } from 'formik'
-import { IButton } from 'index'
-import isEmpty from 'lodash/isEmpty'
-import InboxIcon from 'public/assets/inbox.svg'
-import TodayIcon from 'public/assets/today.svg'
-import { forwardRef } from 'react'
-import ReactDatePicker from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import { useTask } from './useTask'
+import { Disclosure } from '@headlessui/react'
+import { useAuth } from 'context/AuthContext'
+import { format, startOfDay } from 'date-fns'
+import { addDoc, serverTimestamp } from 'firebase/firestore'
+import {
+    ErrorMessage,
+    Field,
+    FieldProps,
+    Form,
+    Formik,
+    FormikHelpers,
+} from 'formik'
+import { parseZodError } from 'helpers/util'
+import { getTaskCollectionRef } from 'hooks/services'
+import { ITask } from 'index'
+import { Fragment } from 'react'
+import { MdCalendarToday, MdOutlineAdd } from 'react-icons/md'
+import { useMutation } from 'react-query'
+import { z } from 'zod'
+import ProjectPicker from './ProjectPicker'
 
-const isInvalidCarry =
-    (fn: (name: string) => FieldMetaProps<any>) => (value: string) => {
-        const { touched, error } = fn(value)
-        return touched && !!error
-    }
+const INITIAL_VALUES = {
+    title: '',
+    description: '',
+    dueDate: format(new Date(), 'yyyy-MM-dd'),
+    project: 'inbox',
+}
 
-function AddTask({ onClose }: { onClose: () => void }) {
-    const {
-        handleSubmit,
-        errors,
-        isSubmitting,
-        isValid,
-        touched,
-        values,
-        getFieldProps,
-        getFieldMeta,
-        setFieldValue,
-    } = useTask()
+type mutationType = {
+    values: typeof INITIAL_VALUES
+    helpers: FormikHelpers<typeof INITIAL_VALUES>
+    userId: string
+}
 
-    const isInvalid = isInvalidCarry(getFieldMeta)
+function useToCreateTask() {
+    return useMutation(
+        ({ values: { dueDate, ...rest }, userId }: mutationType) => {
+            const d = startOfDay(Date.parse(dueDate)).getTime()
+            const data: Omit<ITask, 'updatedAt' | 'id'> = {
+                description: rest.description,
+                title: rest.title,
+                dueDate: d,
+                createdAt: serverTimestamp(),
+                project: rest.project,
+                completed: false,
+            }
 
-    return (
-        <form onSubmit={handleSubmit} noValidate>
-            <div className="flex flex-col gap-y-2 rounded-lg border border-gray-300 px-4 py-3 text-sm focus-within:border-gray-400">
-                <input
-                    type="text"
-                    placeholder="Task name"
-                    className="outline-none"
-                    autoComplete="off"
-                    autoCapitalize="none"
-                    required
-                    aria-invalid={isInvalid('title')}
-                    aria-labelledby={
-                        isInvalid('title') ? 'task-alert' : undefined
-                    }
-                    {...getFieldProps('title')}
-                />
+            return addDoc(getTaskCollectionRef(userId), data)
+        },
+        {
+            onSuccess: (_data, { helpers: { resetForm } }) => {
+                resetForm()
+            },
 
-                <input
-                    type="text"
-                    placeholder="Description"
-                    className="outline-none"
-                    autoComplete="off"
-                    autoCapitalize="none"
-                    required
-                    aria-invalid={isInvalid('description')}
-                    aria-labelledby={
-                        isInvalid('description') ? 'task-alert' : undefined
-                    }
-                    {...getFieldProps('description')}
-                />
-
-                <section className="mt-2 flex gap-x-2" role="group">
-                    <button
-                        type="button"
-                        className="gap-x-1 border-green-300 px-1.5 py-0.5 text-xs font-normal text-green-700"
-                    >
-                        <TodayIcon aria-hidden />
-                        Today
-                    </button>
-
-                    <ReactDatePicker
-                        selected={values.dueDate}
-                        onChange={(arg) => setFieldValue('dueDate', arg)}
-                        className="text-red-400"
-                        customInput={<CustomInputDatePicker />}
-                    />
-
-                    <button
-                        type="button"
-                        className="gap-x-1 border-blue-300 px-1.5 py-0.5 text-xsm font-normal text-blue-700"
-                    >
-                        <InboxIcon aria-hidden className="text-blue-500" />
-                        Inbox
-                    </button>
-                </section>
-            </div>
-
-            <div className="mt-2 flex justify-end gap-x-3 text-xsm">
-                <button
-                    type="button"
-                    className="bg-gray-200 px-2 py-1.5 text-gray-800"
-                    onClick={onClose}
-                >
-                    Cancel
-                </button>
-
-                <button
-                    type="submit"
-                    className="bg-skin-dark px-2 py-1.5 text-white"
-                    disabled={isSubmitting || !isValid}
-                >
-                    Add task
-                </button>
-            </div>
-
-            {!isValid && !isEmpty(touched) && (
-                <div
-                    role="alert"
-                    className="text-sm text-red-500 before:content-['*']"
-                    id="task-alert"
-                >
-                    {Object.values(errors)[0] as string}
-                </div>
-            )}
-        </form>
+            onSettled: (_data, _error, { helpers: { setSubmitting } }) => {
+                setSubmitting(false)
+            },
+        },
     )
 }
 
-const CustomInputDatePicker = forwardRef<HTMLButtonElement, IButton>(
-    function CustomInputDatePicker({ value, ...props }, ref) {
-        return (
-            <button
-                type="button"
-                className="gap-x-1 border-green-300 px-1.5 py-0.5 text-xs font-normal text-green-700"
-                ref={ref}
-                {...props}
-            >
-                <TodayIcon aria-hidden />
-                &nbsp;
-                {value}
-            </button>
-        )
-    },
-)
+function RenderComponent({ close }: { close: React.ReactNode }) {
+    const currentUser = useAuth()
+    const mutation = useToCreateTask()
 
-export default AddTask
+    return (
+        <>
+            <Formik
+                initialValues={INITIAL_VALUES}
+                validate={function validate<T>(values: T) {
+                    const MIN = 'should have minimun 3 characters'
+
+                    const response = z
+                        .object({
+                            title: z.string().min(3, `TaskName ${MIN}`),
+                            description: z
+                                .string()
+                                .min(3, `Description ${MIN}`),
+                            dueDate: z.string(),
+                            project: z.string(),
+                        })
+                        .safeParse(values)
+
+                    return parseZodError(response)
+                }}
+                onSubmit={(values, helpers) => {
+                    if (!currentUser) return
+                    mutation.mutate({
+                        values,
+                        helpers,
+                        userId: currentUser.uid,
+                    })
+                }}
+            >
+                {({ isSubmitting }) => {
+                    return (
+                        <Form
+                            noValidate
+                            className="divide-y rounded-lg border border-gray-200 focus-within:border-gray-400"
+                        >
+                            <div>
+                                <div className="flex flex-col gap-y-2  px-4 py-3 text-sm">
+                                    <Field name="title">
+                                        {({ meta, field }: FieldProps) => {
+                                            const isInvalid =
+                                                meta.touched && !!meta.error
+
+                                            return (
+                                                <input
+                                                    type="text"
+                                                    placeholder="Task name"
+                                                    className="outline-none"
+                                                    autoComplete="off"
+                                                    autoCapitalize="none"
+                                                    required
+                                                    autoFocus
+                                                    disabled={isSubmitting}
+                                                    aria-invalid={isInvalid}
+                                                    aria-labelledby={
+                                                        isInvalid
+                                                            ? 'task-alert'
+                                                            : undefined
+                                                    }
+                                                    {...field}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+
+                                    <Field name="description">
+                                        {({ meta, field }: FieldProps) => {
+                                            const isInvalid =
+                                                meta.touched && !!meta.error
+
+                                            return (
+                                                <input
+                                                    type="text"
+                                                    placeholder="Description"
+                                                    className="outline-none"
+                                                    autoComplete="off"
+                                                    autoCapitalize="none"
+                                                    required
+                                                    disabled={isSubmitting}
+                                                    aria-invalid={isInvalid}
+                                                    aria-labelledby={
+                                                        isInvalid
+                                                            ? 'task-alert'
+                                                            : undefined
+                                                    }
+                                                    {...field}
+                                                />
+                                            )
+                                        }}
+                                    </Field>
+
+                                    <section
+                                        className="mt-2 flex gap-x-2"
+                                        role="group"
+                                        aria-label="Add Tags"
+                                    >
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center gap-x-1 rounded border border-green-300 px-2.5 py-1.5 text-xs font-medium text-green-800 focus:outline-none focus-visible:border-green-500 focus-visible:bg-green-100"
+                                        >
+                                            <MdCalendarToday aria-hidden />
+                                            Today
+                                        </button>
+
+                                        <label className="relative inline-flex cursor-pointer items-center justify-center rounded-sm px-1.5 py-0.5 focus-within:ring-2 focus-within:ring-blue-300">
+                                            <Field name="dueDate">
+                                                {({
+                                                    field,
+                                                }: FieldProps<any>) => (
+                                                    <input
+                                                        type="date"
+                                                        className="focus:outline-none"
+                                                        autoComplete="off"
+                                                        autoCapitalize="none"
+                                                        required
+                                                        min={format(
+                                                            new Date(),
+                                                            'yyyy-MM-dd',
+                                                        )}
+                                                        {...field}
+                                                    />
+                                                )}
+                                            </Field>
+                                        </label>
+
+                                        <ProjectPicker />
+                                    </section>
+                                </div>
+                            </div>
+
+                            <div className="p-2">
+                                <div
+                                    role="alert"
+                                    className="text-xs capitalize leading-6 text-skin-main"
+                                    aria-live="polite"
+                                    id="task-alert"
+                                >
+                                    {['title', 'description', 'dueDate'].map(
+                                        (arg) => (
+                                            <ErrorMessage
+                                                name={arg}
+                                                key={arg}
+                                            />
+                                        ),
+                                    )}
+                                </div>
+
+                                <div className="flex justify-end gap-x-3 text-xsm">
+                                    {close}
+
+                                    <button
+                                        disabled={isSubmitting}
+                                        type="submit"
+                                        className="rounded border-4 border-transparent bg-skin-main px-2 py-1 text-white hover:bg-skin-dark focus:outline-none focus-visible:ring-2 focus-visible:ring-skin-main focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+                                    >
+                                        Add task
+                                    </button>
+                                </div>
+                            </div>
+                        </Form>
+                    )
+                }}
+            </Formik>
+        </>
+    )
+}
+
+function AddTask() {
+    return (
+        <Disclosure>
+            {({ open }) => (
+                <Fragment>
+                    {!open && (
+                        <Disclosure.Button className="group flex w-full items-center justify-start gap-x-2 rounded px-2 py-1 text-xsm focus:outline-none  focus-visible:ring-1 focus-visible:ring-indigo-300">
+                            <span className="inline-flex items-center justify-center rounded-full text-skin-main transition-colors group-hover:bg-skin-main group-hover:text-white">
+                                <MdOutlineAdd
+                                    className="text-2xl"
+                                    aria-hidden
+                                />
+                            </span>
+                            <span className="font-normal text-gray-500 transition-colors group-hover:text-skin-dark">
+                                Add Task
+                            </span>
+                        </Disclosure.Button>
+                    )}
+
+                    <Disclosure.Panel className="focus:outline-none">
+                        {({ close }) => (
+                            <RenderComponent
+                                close={
+                                    <button
+                                        type="button"
+                                        className="flex-shrink-0 rounded border-4 border-transparent px-2 py-1 font-medium text-gray-500 hover:text-gray-800"
+                                        onClick={() => close()}
+                                    >
+                                        Cancel
+                                    </button>
+                                }
+                            />
+                        )}
+                    </Disclosure.Panel>
+                </Fragment>
+            )}
+        </Disclosure>
+    )
+}
+
+export { AddTask as default, RenderComponent as AddTaskComponent }

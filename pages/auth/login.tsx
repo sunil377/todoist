@@ -11,7 +11,6 @@ import NextImage from 'next/image'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import { useState } from 'react'
-import { FaApple } from 'react-icons/fa'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import FormikError from '../../components/Formik/FormikError'
 import FormikInput from '../../components/Formik/FormikInput'
@@ -41,22 +40,16 @@ function Login() {
                             </span>
                         </div>
 
-                        <div className="pt-24 pb-10">
+                        <div className="pt-16 pb-10">
                             <h2 className="text-3xl font-bold">Log In</h2>
 
                             {/* social site authentication */}
-                            <section className="mt-8 flex flex-col gap-y-3">
+                            <section className="mt-12 flex flex-col gap-y-3">
                                 {/* google auth */}
-                                <GoogleAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
+                                <GoogleAuth className="inline-flex items-center justify-center gap-x-2 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
 
                                 {/* fb auth */}
-                                <FacebookAuth className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
-
-                                {/* apple auth */}
-                                <button className="inline-flex items-center justify-center gap-x-3 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70">
-                                    <FaApple className="text-2xl" />
-                                    Continue with Apples
-                                </button>
+                                <FacebookAuth className="inline-flex items-center justify-center gap-x-2 rounded-xl border border-gray-100 p-2 text-lg font-bold hover:bg-gray-200/70 focus-visible:bg-gray-200/70" />
                             </section>
 
                             {/* email auth */}
@@ -66,7 +59,7 @@ function Login() {
 
                             <NextLink
                                 href="/forgot-password"
-                                className="mt-4 inline-block text-xsm text-gray-600 underline"
+                                className="mt-4 inline-block rounded border-2 border-transparent p-0.5 text-xsm text-gray-600 underline focus:outline-none focus-visible:border-blue-500 focus-visible:ring focus-visible:ring-blue-100"
                             >
                                 Forgot your password?
                             </NextLink>
@@ -81,7 +74,7 @@ function Login() {
                                 Don&apos;t have an account?&nbsp;
                                 <NextLink
                                     href="/auth/signup"
-                                    className="underline"
+                                    className="rounded border-2 border-transparent p-0.5 underline focus:outline-none focus-visible:border-blue-500 focus-visible:ring focus-visible:ring-blue-100"
                                 >
                                     Sign Up
                                 </NextLink>
@@ -173,7 +166,7 @@ function AuthenticationForm() {
                             type={isHidden ? 'password' : 'text'}
                             name="password"
                             placeholder="Enter your password..."
-                            className="w-full bg-transparent font-bold outline-none placeholder:font-normal placeholder:text-gray-500"
+                            className="w-full bg-transparent font-bold placeholder:font-normal placeholder:text-gray-500 focus:outline-none"
                             autoComplete="current-password"
                         />
                         <button
@@ -197,7 +190,7 @@ function AuthenticationForm() {
                 </div>
 
                 {/* submit button */}
-                <FormikSubmitButton className="rounded-md border-transparent bg-red-500 py-2 text-xl font-bold text-white hover:bg-red-600">
+                <FormikSubmitButton className="rounded-md bg-red-500 py-2 text-xl font-bold text-white hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-skin-main focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
                     Log In
                 </FormikSubmitButton>
                 {/* Print Error */}

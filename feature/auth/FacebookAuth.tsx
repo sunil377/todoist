@@ -1,6 +1,7 @@
 import { FirebaseErrorFallback } from '@/components/ErrorBoundary'
-import { auth } from 'config/firebase'
+import { auth, db } from 'config/firebase'
 import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth'
+import { arrayUnion, doc, setDoc } from 'firebase/firestore'
 import { IButton } from 'index'
 import { useRouter } from 'next/router'
 import { useErrorHandler, withErrorBoundary } from 'react-error-boundary'
@@ -20,7 +21,12 @@ function FacebookAuth(props: Props) {
     } = props
 
     const { mutate, error, isLoading } = useMutation(
-        () => signInWithPopup(auth, FacebookProvider),
+        async() => {
+            const {user} = await signInWithPopup(auth, FacebookProvider)
+            await setDoc(doc(db, user.uid, 'profile'), {
+                projects: arrayUnion('inbox'),
+            })
+        },
         {
             onSuccess: () => router.push(redirectTo),
         },

@@ -1,6 +1,9 @@
 import { FirebaseErrorFallback } from '@/components/ErrorBoundary'
 import { auth } from 'config/firebase'
+import { FirebaseError } from 'firebase-admin'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { getDoc, setDoc } from 'firebase/firestore'
+import { getProjectRef } from 'hooks/services'
 import { IButton } from 'index'
 import { useRouter } from 'next/router'
 import { useErrorHandler, withErrorBoundary } from 'react-error-boundary'
@@ -20,9 +23,20 @@ function GoogleAuth(props: Props) {
     } = props
 
     const { mutate, error, isLoading } = useMutation(
-        () => signInWithPopup(auth, GoogleProvider),
+        async () => {
+            const { user } = await signInWithPopup(auth, GoogleProvider)
+            const response = await getDoc(getProjectRef(user.uid, 'inbox'))
+            if (!response.exists()) {
+                await setDoc(getProjectRef(user.uid, 'inbox'), {
+                    title: 'inbox',
+                })
+            }
+        },
         {
             onSuccess: () => router.push(redirectTo),
+            onError: (err) => {
+                alert((err as FirebaseError).message)
+            },
         },
     )
 

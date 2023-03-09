@@ -1,47 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* 
+
 @layer base {
-    button,
-    a {
-        @apply relative inline-flex items-center justify-center rounded border border-transparent;
+    kbd {
+        @apply inline-block rounded-sm bg-gray-500 px-1.5;
     }
+}
 
-    button {
-        @apply select-none font-medium disabled:pointer-events-none disabled:opacity-50;
+@layer components {
+    .tooltip > .tooltip-text {
+        @apply invisible opacity-0;
     }
-
-    a {
-        @apply font-normal;
+    .tooltip:hover > .tooltip-text {
+        @apply visible opacity-100;
     }
-
-    button[data-tooltip]::after,
-    button[data-tooltip]::before {
-        @apply pointer-events-none absolute inset-auto top-2 z-tooltip hidden select-none bg-gray-900;
-    }
-
-    button[data-tooltip]::after {
-        @apply w-max translate-y-full transform whitespace-nowrap rounded  p-2 text-xsm font-normal text-white content-[attr(data-tooltip)];
-    }
-
-    button[data-tooltip]::before {
-        @apply top-4 h-5 w-5 translate-y-full rotate-45 transform content-[""];
-    }
-
-    button[data-tooltip][data-position='right'],
-    button[data-tooltip][data-position='right'] {
-        @apply after:right-0;
-    }
-
-    button[data-tooltip]:hover::after,
-    button[data-tooltip]:focus-visible::after,
-    button[data-tooltip]:hover::before,
-    button[data-tooltip]:focus-visible::before {
-        @apply inline-block;
-    }
-
-    label {
-        @apply cursor-text;
-    }
-} */
+}
