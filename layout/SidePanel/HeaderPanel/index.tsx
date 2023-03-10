@@ -2,21 +2,13 @@
 import CalenderIcon from 'public/assets/calender.svg'
 import InboxIcon from 'public/assets/inbox.svg'
 import TabIcon from 'public/assets/tab.svg'
-import { useEffect, useRef } from 'react'
 import HeaderPanelLink from './HeaderPanelLink'
 import TodayIcon from './TodayIcon'
 
 function HeaderSidePanel() {
-    const firstEleRef = useRef<HTMLAnchorElement | null>(null)
-
-    useEffect(() => {
-        firstEleRef.current?.focus()
-    }, [])
-
     return (
         <section className="w-full space-y-1.5" aria-label="page navigation">
             <HeaderPanelLink
-                ref={firstEleRef}
                 href="/app/project/inbox"
                 label="Go To Inbox G then I"
             >

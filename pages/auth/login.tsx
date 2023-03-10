@@ -6,6 +6,7 @@ import {
     useDeviceLanguage,
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
+import { useRedirectToHome } from 'hooks/useRedirectNotLoginUser'
 import Head from 'next/head'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
@@ -23,12 +24,14 @@ import TodoSVG from '../../public/assets/todo.svg'
 
 function Login() {
     useDeviceLanguage(auth)
+    useRedirectToHome()
 
     return (
         <>
             <Head>
                 <title>Log in to Todoist</title>
             </Head>
+            {console.log('render')}
 
             <div className="mx-auto grid max-w-5xl lg:grid-cols-2">
                 <div>

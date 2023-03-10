@@ -5,7 +5,8 @@ import clsx from 'clsx'
 import useGoToListener from 'hooks/useGoToListener'
 import { useKeypadListener } from 'hooks/useKeypadListener'
 import NextLink from 'next/link'
-import React, { Fragment, useCallback, useState } from 'react'
+import { useRouter } from 'next/router'
+import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import { FaHome } from 'react-icons/fa'
 import {
     MdAddAlert,
@@ -19,7 +20,8 @@ import FooterSidePanel from './SidePanel/FooterPanel'
 import HeaderSidePanel from './SidePanel/HeaderPanel'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
-    const [isMenuOpened, setMenuOpen] = useState(true)
+    const [isMenuOpened, setMenuOpen] = useState(false)
+    const router = useRouter()
 
     useGoToListener()
 
@@ -28,6 +30,18 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             setMenuOpen((prev) => !prev)
         }
     }, [])
+
+    useEffect(() => {
+        function onComplete() {
+            setMenuOpen(false)
+        }
+
+        router.events.on('routeChangeComplete', onComplete)
+
+        return () => {
+            router.events.off('routeChangeComplete', onComplete)
+        }
+    }, [router.events])
 
     useKeypadListener(onkeydown)
 

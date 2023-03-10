@@ -10,4 +10,15 @@ function useRedirectNotLoginUser() {
     }
 }
 
+function useRedirectToHome() {
+    const currentUser = useAuth()
+    const router = useRouter()
+
+    if (currentUser) {
+        console.log('redirect')
+        router.replace('/app/today')
+    }
+}
+
 export default useRedirectNotLoginUser
+export { useRedirectToHome }

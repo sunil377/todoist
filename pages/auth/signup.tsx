@@ -13,6 +13,7 @@ import { getDoc, setDoc } from 'firebase/firestore'
 import { Form, Formik } from 'formik'
 import { parseZodErrorToFormikError } from 'helpers/util'
 import { getProjectRef } from 'hooks/services'
+import { useRedirectToHome } from 'hooks/useRedirectNotLoginUser'
 import Head from 'next/head'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
@@ -27,6 +28,7 @@ import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 
 function Signup() {
     useDeviceLanguage(auth)
+    useRedirectToHome()
 
     return (
         <>
@@ -141,10 +143,10 @@ function AuthenticationForm() {
                         password,
                     )
 
-                    const { exists } = await getDoc(
+                    const response = await getDoc(
                         getProjectRef(user.uid, 'inbox'),
                     )
-                    if (!exists()) {
+                    if (!response.exists()) {
                         await setDoc(getProjectRef(user.uid, 'inbox'), {
                             title: 'inbox',
                         })
