@@ -10,12 +10,19 @@ const nextConfig = {
 
         return config
     },
-}
-
-nextConfig.reactStrictMode = true
-
-nextConfig.images = {
-    domains: ['lh3.googleusercontent.com'],
+    reactStrictMode: true,
+    images: {
+        domains: ['lh3.googleusercontent.com'],
+    },
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/app/today',
+                permanent: true,
+            },
+        ]
+    },
 }
 
 module.exports = nextConfig

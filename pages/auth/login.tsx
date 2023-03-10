@@ -110,7 +110,7 @@ function AuthenticationForm() {
             ) {
                 try {
                     await signInWithEmailAndPassword(auth, email, password)
-                    router.push('/')
+                    router.push('/app/today')
                 } catch (firebaseError) {
                     setSubmitting(false)
 

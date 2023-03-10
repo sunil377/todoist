@@ -149,7 +149,7 @@ function AuthenticationForm() {
                             title: 'inbox',
                         })
                     }
-                    router.push('/')
+                    router.push('/app/today')
                 } catch (firebaseError) {
                     setSubmitting(false)
                     console.log(firebaseError)

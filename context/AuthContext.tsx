@@ -24,7 +24,12 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             async (user) => {
                 setCurrentUser(user)
                 setLoading(false)
-                const token = (await user?.getIdToken()) ?? ''
+                let token = ''
+                try {
+                    token = (await user?.getIdToken()) ?? ''
+                } catch (error) {
+                    token = ''
+                }
                 nookies.set(null, 'token', token, { path: '/' })
             },
             (error) => {

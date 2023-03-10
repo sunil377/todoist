@@ -130,9 +130,9 @@ function MainLayout({ children }: { children: React.ReactNode }) {
             </nav>
             {isMenuOpened && (
                 <Fragment>
-                    <div className="absolute inset-0 z-10 bg-black/30 md:hidden" />
+                    <div className="absolute inset-0 z-10 bg-black/30 sm:hidden" />
                     <button
-                        className="tooltip fixed top-14 right-5 z-20 text-3xl font-semibold text-white md:hidden"
+                        className="tooltip fixed top-14 right-5 z-20 text-3xl font-semibold text-white sm:hidden"
                         onClick={() => setMenuOpen(false)}
                     >
                         <ToolTip className="top-full left-1/2 translate-y-2 -translate-x-1/2 after:-top-1.5 after:left-1/2 after:-translate-x-1/2">
