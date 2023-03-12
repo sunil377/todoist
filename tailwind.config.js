@@ -18,6 +18,9 @@ module.exports = {
                     dark: '#d1453b',
                 },
             },
+            zIndex: {
+                alert: 1000,
+            },
         },
     },
     plugins: [],

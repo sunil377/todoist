@@ -10,7 +10,7 @@ function FooterSidePanel() {
 
     return (
         <Disclosure as="div">
-            <div className="flex items-center gap-x-1 rounded-sm px-3 text-sm font-semibold text-gray-600 hover:bg-gray-200">
+            <div className="flex items-center gap-x-1 rounded-sm pl-3 text-sm font-semibold text-gray-600 hover:bg-gray-200">
                 <div>Projects</div>
                 <button
                     type="button"

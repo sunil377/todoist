@@ -10,7 +10,6 @@ import {
     getTaskCollectionRef,
     getTasksFormSnapShot,
 } from 'hooks/services'
-import useRedirectNotLoginUser from 'hooks/useRedirectNotLoginUser'
 import { IProject, ITask } from 'index'
 import MainLayout from 'layout/MainLayout'
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
@@ -50,8 +49,6 @@ const Project: NextPageWithLayout = function Project(
             },
         )
     }, [currentUser, slug])
-
-    useRedirectNotLoginUser()
 
     if (statusCode) {
         return <NotFound statusCode={statusCode} />

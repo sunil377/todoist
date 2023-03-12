@@ -5,15 +5,11 @@ import { auth } from 'config/firebase'
 import FacebookAuth from 'feature/auth/FacebookAuth'
 import GoogleAuth from 'feature/auth/GoogleAuth'
 import { FirebaseError } from 'firebase/app'
-import {
-    createUserWithEmailAndPassword,
-    useDeviceLanguage,
-} from 'firebase/auth'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { getDoc, setDoc } from 'firebase/firestore'
 import { Form, Formik } from 'formik'
 import { parseZodErrorToFormikError } from 'helpers/util'
 import { getProjectRef } from 'hooks/services'
-import { useRedirectToHome } from 'hooks/useRedirectNotLoginUser'
 import Head from 'next/head'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
@@ -27,9 +23,6 @@ import { useState } from 'react'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 
 function Signup() {
-    useDeviceLanguage(auth)
-    useRedirectToHome()
-
     return (
         <>
             <Head>

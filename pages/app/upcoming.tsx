@@ -2,7 +2,6 @@ import AddTask from '@/components/AddTask'
 import Task from '@/components/Task'
 import { adminAuth } from '@/config/firebaseAdmin'
 import { useGetUpcomingTasks } from 'hooks/services'
-import useRedirectNotLoginUser from 'hooks/useRedirectNotLoginUser'
 import MainLayout from 'layout/MainLayout'
 import { GetServerSidePropsContext } from 'next'
 import nookies from 'nookies'
@@ -10,7 +9,6 @@ import { NextPageWithLayout } from '../_app'
 
 const Upcoming: NextPageWithLayout = function Upcoming({ ...props }) {
     const { state: tasks } = useGetUpcomingTasks()
-    useRedirectNotLoginUser()
 
     return (
         <>

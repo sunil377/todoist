@@ -6,7 +6,6 @@ import ToolTip from '@/components/Tooltip'
 import { adminAuth } from '@/config/firebaseAdmin'
 import { format, startOfDay } from 'date-fns'
 import { useToGetAllTasks } from 'hooks/services'
-import useRedirectNotLoginUser from 'hooks/useRedirectNotLoginUser'
 import { ITask } from 'index'
 import MainLayout from 'layout/MainLayout'
 import { GetServerSidePropsContext } from 'next'
@@ -19,7 +18,6 @@ import { NextPageWithLayout } from '../_app'
 
 const Today: NextPageWithLayout = function Today() {
     const { state, error, isLoading } = useToGetAllTasks()
-    useRedirectNotLoginUser()
 
     const today = useMemo(() => startOfDay(new Date()), [])
 
@@ -27,7 +25,7 @@ const Today: NextPageWithLayout = function Today() {
     const ongoing = state.filter((val) => val.dueDate === today.getTime())
 
     return (
-        <main className="mx-auto space-y-8 px-4 py-8 sm:w-10/12">
+        <main className="mx-auto space-y-8 px-2 py-8 sm:w-10/12 sm:px-4">
             <Head>
                 <title>Today: Todoist</title>
             </Head>
@@ -160,8 +158,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     const token = cookies.token
 
     try {
-        await adminAuth.verifyIdToken(token)
-
+        await adminAuth.verifyIdToken(token, true)
         return {
             props: {},
         }

@@ -33,10 +33,10 @@ function AddTaskNavButton() {
             <Dialog
                 onClose={setOpen}
                 open={isOpen}
-                className="fixed inset-x-0 top-1/4 isolate z-50 mx-auto w-10/12 max-w-md"
+                className="fixed inset-x-0 top-1/4 isolate z-50 mx-auto w-11/12 max-w-md"
             >
                 <div aria-hidden className="fixed inset-0 z-10 bg-black/20" />
-                <Dialog.Panel className="relative z-20 rounded border bg-white p-5">
+                <Dialog.Panel className="relative z-20 rounded border bg-white p-2 sm:p-5">
                     <Dialog.Title className="sr-only">Add task</Dialog.Title>
                     <AddTaskComponent
                         close={

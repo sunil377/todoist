@@ -14,7 +14,7 @@ import { parseZodError } from 'helpers/util'
 import { getTaskCollectionRef } from 'hooks/services'
 import { ITask } from 'index'
 import { Fragment } from 'react'
-import { MdCalendarToday, MdOutlineAdd } from 'react-icons/md'
+import { MdOutlineAdd } from 'react-icons/md'
 import { useMutation } from 'react-query'
 import { z } from 'zod'
 import ProjectPicker from './ProjectPicker'
@@ -158,15 +158,7 @@ function RenderComponent({ close }: { close: React.ReactNode }) {
                                         role="group"
                                         aria-label="Add Tags"
                                     >
-                                        <button
-                                            type="button"
-                                            className="inline-flex items-center gap-x-1 rounded border border-green-300 px-2.5 py-1.5 text-xs font-medium text-green-800 focus:outline-none focus-visible:border-green-500 focus-visible:bg-green-100"
-                                        >
-                                            <MdCalendarToday aria-hidden />
-                                            Today
-                                        </button>
-
-                                        <label className="relative inline-flex cursor-pointer items-center justify-center rounded-sm px-1.5 py-0.5 focus-within:ring-2 focus-within:ring-blue-300">
+                                        <label className="relative inline-flex cursor-pointer items-center justify-center rounded-sm border border-green-300 px-1.5 py-0.5 text-green-800 focus-within:border-green-500 focus-within:ring-2">
                                             <Field name="dueDate">
                                                 {({
                                                     field,

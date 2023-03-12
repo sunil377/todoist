@@ -3,10 +3,8 @@ import { FirebaseError } from 'firebase/app'
 import {
     fetchSignInMethodsForEmail,
     signInWithEmailAndPassword,
-    useDeviceLanguage,
 } from 'firebase/auth'
 import { Form, Formik } from 'formik'
-import { useRedirectToHome } from 'hooks/useRedirectNotLoginUser'
 import Head from 'next/head'
 import NextImage from 'next/image'
 import NextLink from 'next/link'
@@ -23,9 +21,6 @@ import banner from '../../public/assets/banner.png'
 import TodoSVG from '../../public/assets/todo.svg'
 
 function Login() {
-    useDeviceLanguage(auth)
-    useRedirectToHome()
-
     return (
         <>
             <Head>
