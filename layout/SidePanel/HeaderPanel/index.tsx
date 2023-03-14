@@ -1,7 +1,5 @@
-/* icons */
 import CalenderIcon from 'public/assets/calender.svg'
 import InboxIcon from 'public/assets/inbox.svg'
-import TabIcon from 'public/assets/tab.svg'
 import HeaderPanelLink from './HeaderPanelLink'
 import TodayIcon from './TodayIcon'
 
@@ -27,11 +25,6 @@ function HeaderSidePanel() {
             >
                 <CalenderIcon aria-hidden className="text-purple-500" />
                 Upcoming
-            </HeaderPanelLink>
-
-            <HeaderPanelLink href="/app/filter-labels">
-                <TabIcon aria-hidden className="text-yellow-500" />
-                Filters & Labels
             </HeaderPanelLink>
         </section>
     )

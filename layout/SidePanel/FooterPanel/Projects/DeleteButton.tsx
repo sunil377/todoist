@@ -24,7 +24,7 @@ function DeleteButton(arg: IProject) {
                         })
                     }}
                     className={clsx('flex items-center gap-x-2.5 px-3 py-2', {
-                        'bg-gray-200/75': active,
+                        'text-red-500': active,
                     })}
                 >
                     <MdDelete className="text-lg" />

@@ -7,14 +7,9 @@ import { useKeypadListener } from 'hooks/useKeypadListener'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import { AiOutlineQuestionCircle } from 'react-icons/ai'
 import { FaHome } from 'react-icons/fa'
-import {
-    MdAddAlert,
-    MdOutlineAutoGraph,
-    MdOutlineClose,
-    MdOutlineMenu,
-    MdQuestionAnswer,
-} from 'react-icons/md'
+import { MdOutlineClose, MdOutlineMenu } from 'react-icons/md'
 import ProfileDropDown from './ProfileDropDown'
 import FooterSidePanel from './SidePanel/FooterPanel'
 import HeaderSidePanel from './SidePanel/HeaderPanel'
@@ -78,65 +73,22 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                         <ToolTip className="top-full left-0 translate-y-2 after:-top-1 after:left-3">
                             Go To Home <kbd>G</kbd> Then <kbd>H</kbd>
                         </ToolTip>
-                        <FaHome className="text-xl md:text-2xl" />
+                        <FaHome className="text-lg md:text-xl" />
                     </NextLink>
-
-                    {/* <label
-                        className="group relative mr-auto flex items-center rounded bg-white bg-opacity-20 p-0.5 transition-colors focus-within:bg-white hover:bg-white"
-                        htmlFor="search"
-                    >
-                        <div className="left-0 flex items-center group-focus-within:absolute group-focus-within:z-10 group-focus-within:min-w-[50vw] group-focus-within:bg-white sm:group-focus-within:static sm:group-focus-within:z-0 sm:group-focus-within:min-w-full sm:group-focus-within:bg-transparent">
-                            <div
-                                className="pointer-events-none inline-flex select-none items-center justify-center rounded-full p-1 group-focus-within:text-gray-500 group-hover:text-gray-600"
-                                role="presentation"
-                            >
-                                <SearchIcon aria-hidden className="text-lg" />
-                            </div>
-
-                            <input
-                                type="text"
-                                placeholder="Search"
-                                id="search"
-                                className="h-0 w-0 bg-transparent text-xsm placeholder:text-white focus:text-black focus:outline-none focus:placeholder:text-gray-600 group-focus-within:h-auto group-focus-within:w-auto group-hover:placeholder:text-gray-600 sm:h-auto sm:w-auto"
-                                autoComplete="off"
-                            />
-
-                            <button
-                                className="hidden select-none items-center justify-center rounded-full p-1 text-xl leading-6 text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-skin-main group-focus-within:inline-flex group-hover:inline-flex"
-                                aria-label="close"
-                            >
-                                <MdOutlineClose aria-hidden />
-                            </button>
-                        </div>
-                    </label> */}
                 </div>
 
                 <div
-                    className="flex items-center gap-x-0.5 py-1.5 pr-2"
+                    className="flex items-center gap-x-0.5 py-1.5 pr-2 sm:gap-x-1"
                     role="group"
                     aria-label="Menu"
                 >
                     <AddTaskDialog />
 
                     <button className="tooltip relative rounded-full p-2 hover:bg-white/10 focus:outline-none focus-visible:bg-white/20">
-                        <ToolTip className="top-full left-1/2 -translate-x-1/2 translate-y-2 after:-top-1 after:left-1/2 after:-translate-x-1/2">
-                            Open Productivity <kbd>O</kbd> then <kbd>P</kbd>
-                        </ToolTip>
-                        <MdOutlineAutoGraph className="text-xl md:text-2xl" />
-                    </button>
-
-                    <button className="tooltip relative rounded-full p-2 hover:bg-white/10 focus:outline-none focus-visible:bg-white/20">
                         <ToolTip className="top-full right-0 translate-y-2 after:-top-1 after:right-2.5">
                             Open help & info <kbd>O</kbd> then <kbd>H</kbd>
                         </ToolTip>
-                        <MdQuestionAnswer className="text-xl md:text-2xl" />
-                    </button>
-
-                    <button className="tooltip relative rounded-full p-2 hover:bg-white/10 focus:outline-none focus-visible:bg-white/20">
-                        <ToolTip className="top-full right-0 translate-y-2 after:-top-1 after:right-2.5">
-                            Open Notification <kbd>O</kbd> then <kbd>N</kbd>
-                        </ToolTip>
-                        <MdAddAlert className="text-xl md:text-2xl" />
+                        <AiOutlineQuestionCircle className="text-lg md:text-xl" />
                     </button>
 
                     <ProfileDropDown />

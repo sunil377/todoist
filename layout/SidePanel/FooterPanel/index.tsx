@@ -1,22 +1,29 @@
 import { parseZodError } from '@/helpers/util'
-import { Dialog, Disclosure, Transition } from '@headlessui/react'
+import { Dialog, Disclosure, Listbox, Transition } from '@headlessui/react'
 import clsx from 'clsx'
 import { useAuth } from 'context/AuthContext'
 import { FirebaseError } from 'firebase/app'
 import { addDoc } from 'firebase/firestore'
-import { Field, Form, Formik, FormikHelpers } from 'formik'
+import {
+    ErrorMessage,
+    Field,
+    FieldProps,
+    Form,
+    Formik,
+    FormikHelpers,
+} from 'formik'
 import { getProjectCollectionRef } from 'hooks/services'
+import { IProject } from 'index'
 import { Fragment, useState } from 'react'
 import { HiChevronLeft, HiPlus } from 'react-icons/hi'
+import { MdCheck } from 'react-icons/md'
 import { useMutation } from 'react-query'
 import { z } from 'zod'
 import Projects from './Projects'
 
-interface IMutationType {
-    projectTitle: string
-    helpers: FormikHelpers<{
-        projectTitle: string
-    }>
+type project = Pick<IProject, 'color' | 'title'>
+interface IMutationType extends project {
+    helpers: FormikHelpers<project>
 }
 
 function FooterSidePanel() {
@@ -24,13 +31,14 @@ function FooterSidePanel() {
     const currentUser = useAuth()
 
     const addProject = useMutation(
-        ({ projectTitle }: IMutationType) => {
+        ({ title, color }: IMutationType) => {
             if (!currentUser) {
                 return Promise.reject(new Error('Not Allowed'))
             }
 
             return addDoc(getProjectCollectionRef(currentUser.uid), {
-                title: projectTitle,
+                title,
+                color,
             })
         },
         {
@@ -90,7 +98,7 @@ function FooterSidePanel() {
                     >
                         <div className="fixed inset-0 bg-black/30" />
 
-                        <Dialog.Panel className="fixed h-auto w-full max-w-[min(500px,calc(100%-2rem))] overflow-auto rounded bg-gray-800 p-5 text-sm shadow-md shadow-gray-800 sm:p-10">
+                        <Dialog.Panel className="fixed h-full max-h-[min(450px,calc(100%-2rem))] w-full max-w-[min(500px,calc(100%-2rem))] overflow-auto rounded bg-gray-800 p-5 text-sm shadow-md shadow-gray-800 sm:p-10">
                             <Dialog.Title
                                 as="h4"
                                 className="mb-4 font-semibold text-white"
@@ -99,20 +107,24 @@ function FooterSidePanel() {
                             </Dialog.Title>
 
                             <Formik
-                                initialValues={{ projectTitle: '' }}
+                                initialValues={{
+                                    title: '',
+                                    color: 'green',
+                                }}
                                 validate={(values) => {
                                     const response = z
                                         .object({
-                                            projectTitle: z.string().min(3),
+                                            title: z.string().min(3),
+                                            color: z.string(),
                                         })
                                         .safeParse(values)
 
                                     return parseZodError(response)
                                 }}
-                                onSubmit={({ projectTitle }, helpers) => {
+                                onSubmit={(values, helpers) => {
                                     addProject.mutate({
-                                        projectTitle,
                                         helpers,
+                                        ...values,
                                     })
                                 }}
                             >
@@ -125,18 +137,19 @@ function FooterSidePanel() {
                                     <Form noValidate>
                                         <Field
                                             type="text"
-                                            name="projectTitle"
+                                            name="title"
                                             autoComplete="off"
-                                            autoCurrect="off"
                                             className="w-full rounded border bg-white px-2 leading-8 focus:outline-none focus-visible:border-blue-300 focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800"
                                             placeholder="Enter title..."
                                             aria-invalid={
                                                 submitCount > 0 &&
-                                                !!errors.projectTitle
+                                                !!errors.title
                                             }
                                         />
 
-                                        <section className="mt-8 flex justify-end gap-x-2 font-semibold text-white">
+                                        <ColorPicker />
+
+                                        <section className="mt-4 flex justify-end gap-x-2 font-semibold text-white">
                                             <button
                                                 type="button"
                                                 className="rounded bg-transparent px-3 py-1.5 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-gray-800"
@@ -155,6 +168,15 @@ function FooterSidePanel() {
                                                 Submit
                                             </button>
                                         </section>
+                                        {submitCount > 0 &&
+                                            ['title', 'color'].map((t) => (
+                                                <ErrorMessage
+                                                    name={t}
+                                                    key={t}
+                                                    component="span"
+                                                    className='block text-skin-main before:content-["*"]'
+                                                />
+                                            ))}
                                     </Form>
                                 )}
                             </Formik>
@@ -173,6 +195,88 @@ function FooterSidePanel() {
                 <Projects />
             </Disclosure.Panel>
         </Disclosure>
+    )
+}
+
+export const colors = [
+    { name: 'black', property: '#000' },
+    { name: 'yellow', property: '#eab308' },
+    { name: 'lime', property: '#84cc16' },
+    { name: 'green', property: '#22c55e' },
+    { name: 'teal', property: '#14b8a6' },
+    { name: 'indigo', property: '#6366f1' },
+    { name: 'purple', property: '#a855f7' },
+    { name: 'pink', property: '#ec4899' },
+    { name: 'red', property: '#ef4444' },
+]
+
+export function findColor(color: string) {
+    const result = colors.find((c) => c.name === color)
+    return result?.property ?? '#000'
+}
+
+function ColorPicker() {
+    return (
+        <section className="mt-4">
+            <div className="mb-2 font-semibold text-white">Color</div>
+            <div className="relative">
+                <Field name="color">
+                    {({ field, form: { setFieldValue } }: FieldProps) => (
+                        <Listbox
+                            value={field.value}
+                            onChange={(e) => setFieldValue('color', e)}
+                        >
+                            <Listbox.Button className="flex w-full items-center justify-start gap-x-2 rounded border border-gray-300 bg-white pl-3 font-medium capitalize leading-8 text-gray-700 focus:outline-none focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-800">
+                                <span
+                                    className="inline-block h-3 w-3 rounded-full"
+                                    style={{
+                                        background: findColor(field.value),
+                                    }}
+                                ></span>
+                                {field.value}
+                            </Listbox.Button>
+                            <Listbox.Options className="absolute z-10 h-auto w-full overflow-auto rounded-md border border-gray-300 bg-white shadow shadow-gray-300 focus:outline-none">
+                                {colors.map((c) => (
+                                    <Listbox.Option
+                                        key={c.name}
+                                        value={c.name}
+                                        as={Fragment}
+                                    >
+                                        {({ active, selected }) => (
+                                            <li
+                                                className={clsx(
+                                                    'flex w-full cursor-pointer items-center justify-start gap-x-3 py-1 pl-3 capitalize',
+                                                    {
+                                                        'bg-gray-200': active,
+                                                    },
+                                                )}
+                                            >
+                                                <span
+                                                    className="inline-block h-3 w-3 rounded-full"
+                                                    style={{
+                                                        background: c.property,
+                                                    }}
+                                                ></span>
+                                                <span
+                                                    style={{
+                                                        color: c.property,
+                                                    }}
+                                                >
+                                                    {c.name}
+                                                </span>
+                                                {selected && (
+                                                    <MdCheck className="ml-auto text-xl text-blue-500" />
+                                                )}
+                                            </li>
+                                        )}
+                                    </Listbox.Option>
+                                ))}
+                            </Listbox.Options>
+                        </Listbox>
+                    )}
+                </Field>
+            </div>
+        </section>
     )
 }
 

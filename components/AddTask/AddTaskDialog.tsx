@@ -58,7 +58,7 @@ function AddTaskDialog() {
                         className="fixed inset-0 z-10 bg-black/30"
                     />
 
-                    <Dialog.Panel className="relative z-20 h-auto max-h-[calc(100vh-2*2.24rem)] w-full max-w-[min(700px,calc(100%-2rem))] overflow-auto rounded-md border border-gray-800 bg-gray-800 p-5 shadow-md shadow-gray-800 sm:p-10">
+                    <Dialog.Panel className="relative z-20 h-full max-h-[min(400px,calc(100%-2rem))] w-full max-w-[min(700px,calc(100%-2rem))] overflow-auto rounded-md border border-gray-800 bg-gray-800 p-5 shadow-md shadow-gray-800 sm:p-10">
                         <Dialog.Title
                             as="h4"
                             className="mb-6 font-semibold tracking-wide text-white"

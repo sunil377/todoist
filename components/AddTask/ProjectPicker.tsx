@@ -1,6 +1,7 @@
 import { Combobox, Popover } from '@headlessui/react'
 import clsx from 'clsx'
 import { useField, useFormikContext } from 'formik'
+import { findColor } from 'layout/SidePanel/FooterPanel'
 import { Fragment } from 'react'
 import { FaInbox } from 'react-icons/fa'
 import { HiChevronDown } from 'react-icons/hi'
@@ -12,6 +13,7 @@ function ProjectPicker({ isDialog = false }) {
 
     const [field] = useField('project')
     const { setFieldValue } = useFormikContext()
+    console.log(field)
 
     return (
         <Popover as="div" className="relative">
@@ -64,11 +66,20 @@ function ProjectPicker({ isDialog = false }) {
                                                 { 'bg-gray-100': active },
                                             )}
                                         >
-                                            {tag.title === 'inbox' && (
+                                            {tag.title === 'inbox' ? (
                                                 <FaInbox
                                                     aria-hidden
                                                     className="text-base text-blue-500"
                                                 />
+                                            ) : (
+                                                <span
+                                                    className="inline-block h-3 w-3 rounded-full"
+                                                    style={{
+                                                        background: findColor(
+                                                            tag.color,
+                                                        ),
+                                                    }}
+                                                ></span>
                                             )}
                                             {tag.title}
                                             {selected && (

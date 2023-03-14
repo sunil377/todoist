@@ -2,7 +2,10 @@ import { useUpdateTask } from 'hooks/services'
 import { ITask } from 'index'
 import { MdCheck } from 'react-icons/md'
 
-function CompletedCheckbox({ id: docId }: Pick<ITask, 'id'>) {
+function CompletedCheckbox({
+    id: docId,
+    completed,
+}: Pick<ITask, 'id' | 'completed'>) {
     const updateMuation = useUpdateTask()
 
     return (
@@ -16,10 +19,14 @@ function CompletedCheckbox({ id: docId }: Pick<ITask, 'id'>) {
                 })
             }}
         >
-            <MdCheck
-                aria-hidden
-                className="invisible text-xs text-gray-600 group-hover/check:visible"
-            />
+            {completed ? (
+                <MdCheck aria-hidden className="text-xs text-gray-600" />
+            ) : (
+                <MdCheck
+                    aria-hidden
+                    className="invisible text-xs text-gray-600 group-hover/check:visible"
+                />
+            )}
         </button>
     )
 }

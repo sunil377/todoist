@@ -4,6 +4,8 @@ import NotFound from '@/components/NotFound'
 import Task from '@/components/Task'
 import { adminAuth } from '@/config/firebaseAdmin'
 import { NextPageWithLayout } from '@/pages/_app'
+import { Menu } from '@headlessui/react'
+import clsx from 'clsx'
 import { useAuth } from 'context/AuthContext'
 import { onSnapshot, query, where } from 'firebase/firestore'
 import {
@@ -17,6 +19,7 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import nookies from 'nookies'
 import { Fragment, useEffect, useState } from 'react'
+import { MdIncompleteCircle, MdMoreHoriz } from 'react-icons/md'
 
 function useProjectTasks() {
     const [tags, setTags] = useState<IProject | null>(null)
@@ -58,6 +61,7 @@ const Project: NextPageWithLayout = function Project(
     props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {
     const { error, isLoading, tags } = useProjectTasks()
+    const [isCompletedShowing, setCompletedShowing] = useState(false)
 
     switch (true) {
         case isLoading:
@@ -73,16 +77,67 @@ const Project: NextPageWithLayout = function Project(
             return (
                 <>
                     <main className="px-4 pt-8 sm:mx-auto sm:w-10/12">
-                        <section>
+                        <section className="flex items-center justify-between">
                             <h1 className="text-xl font-bold capitalize">
                                 {tags?.title}
                             </h1>
+                            <div className="relative">
+                                <Menu>
+                                    <Menu.Button className="rounded bg-transparent p-1.5 align-middle text-xl leading-5 transition-colors hover:bg-gray-300">
+                                        <MdMoreHoriz />
+                                    </Menu.Button>
+                                    <Menu.Items className="absolute right-0 z-10 h-auto w-60 max-w-sm overflow-auto whitespace-nowrap rounded border border-gray-300 bg-white py-1 text-sm font-normal text-gray-600 shadow-md shadow-gray-300 focus:outline-none focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-2">
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <button
+                                                    className={clsx(
+                                                        'flex w-full gap-x-2 py-1 pl-4 transition-colors focus:outline-none',
+                                                        {
+                                                            'bg-gray-200':
+                                                                active,
+                                                        },
+                                                    )}
+                                                    onClick={() =>
+                                                        setCompletedShowing(
+                                                            (prev) => !prev,
+                                                        )
+                                                    }
+                                                >
+                                                    <MdIncompleteCircle className="text-xl" />
+
+                                                    <span>
+                                                        {isCompletedShowing
+                                                            ? 'Hide'
+                                                            : 'Show'}{' '}
+                                                        completed
+                                                    </span>
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                    </Menu.Items>
+                                </Menu>
+                            </div>
+                        </section>
+                        <section>
                             <ul className="mt-5">
                                 <RenderTasks projectName={tags?.title} />
                             </ul>
                         </section>
                         <section className="mt-1">
-                            <AddTask />
+                            <AddTask initialProject={tags?.title ?? 'inbox'} />
+
+                            {isCompletedShowing && (
+                                <div>
+                                    <h4 className="mt-8 mb-4 font-semibold">
+                                        Completed Tasks
+                                    </h4>
+
+                                    <RenderTasks
+                                        projectName={tags?.title}
+                                        isCompletedShowing={true}
+                                    />
+                                </div>
+                            )}
                         </section>
                     </main>
                 </>
@@ -90,7 +145,13 @@ const Project: NextPageWithLayout = function Project(
     }
 }
 
-function RenderTasks({ projectName }: { projectName?: string }) {
+function RenderTasks({
+    projectName,
+    isCompletedShowing = false,
+}: {
+    projectName?: string
+    isCompletedShowing?: boolean
+}) {
     const currentUser = useAuth()
     const [state, setState] = useState<Array<ITask>>([])
     const [error, setError] = useState('')
@@ -104,7 +165,7 @@ function RenderTasks({ projectName }: { projectName?: string }) {
         return onSnapshot(
             query(
                 getTaskCollectionRef(currentUser.uid),
-                where('completed', '==', false),
+                where('completed', '==', isCompletedShowing),
                 where('project', '==', projectName),
             ),
             (snapshot) => {
@@ -129,7 +190,11 @@ function RenderTasks({ projectName }: { projectName?: string }) {
             return <div role="alert">{error}</div>
 
         case state.length === 0:
-            return <div>No Task Found</div>
+            return (
+                <div className="text-sm">
+                    No {isCompletedShowing ? 'completed' : ''} Task Found
+                </div>
+            )
 
         default:
             return (

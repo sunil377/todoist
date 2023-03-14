@@ -2,7 +2,6 @@ import AddTask from '@/components/AddTask'
 import { Error } from '@/components/Error'
 import { Spinner } from '@/components/FullScreenLoader'
 import Task from '@/components/Task'
-import ToolTip from '@/components/Tooltip'
 import { adminAuth } from '@/config/firebaseAdmin'
 import { format, startOfDay } from 'date-fns'
 import { useToGetAllTasks } from 'hooks/services'
@@ -10,9 +9,7 @@ import { ITask } from 'index'
 import MainLayout from 'layout/MainLayout'
 import { GetServerSidePropsContext } from 'next'
 import Head from 'next/head'
-import NextLink from 'next/link'
 import nookies from 'nookies'
-import SettingsIcon from 'public/assets/settings.svg'
 import { useMemo } from 'react'
 import { NextPageWithLayout } from '../_app'
 
@@ -29,21 +26,13 @@ const Today: NextPageWithLayout = function Today() {
             <Head>
                 <title>Today: Todoist</title>
             </Head>
-            <div className="flex justify-between">
-                <h1>
-                    <strong className="mr-2 text-xl">Today</strong>
-                    <span className="text-xs text-gray-500">
-                        {format(today, 'EEE MMM d')}
-                    </span>
-                </h1>
-                <button className="tooltip relative inline-flex items-center gap-x-2 rounded border border-transparent px-1 text-gray-500 focus:outline-none focus-visible:border-blue-300 focus-visible:ring-4 focus-visible:ring-blue-100">
-                    <SettingsIcon aria-hidden />
-                    <span className="hidden text-xsm md:inline">view</span>
-                    <ToolTip className="bottom-full left-1/2 -translate-x-1/2 after:-bottom-0.5 after:left-1/2 after:-translate-x-1/2 md:hidden">
-                        view
-                    </ToolTip>
-                </button>
-            </div>
+
+            <h1>
+                <strong className="mr-2 text-xl">Today</strong>
+                <span className="text-xs text-gray-500">
+                    {format(today, 'EEE MMM d')}
+                </span>
+            </h1>
 
             <OverdueTask loading={isLoading} error={error} data={overdue} />
 
@@ -86,15 +75,7 @@ function OverdueTask({
         default:
             return (
                 <section className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                        <h2 className="font-bold">Overdue</h2>
-                        <NextLink
-                            href="/reshedule"
-                            className="rounded border border-transparent px-1 text-skin-main hover:underline focus:outline-none focus-visible:border-blue-300 focus-visible:ring-4 focus-visible:ring-blue-100"
-                        >
-                            Reschedule
-                        </NextLink>
-                    </div>
+                    <h2 className="text-sm font-bold">Overdue</h2>
                     <ul className="flex flex-col gap-y-0.5 border-t border-t-gray-200">
                         {data.map((task) => (
                             <Task key={task.id} {...task} />

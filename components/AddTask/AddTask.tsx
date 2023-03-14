@@ -14,13 +14,19 @@ const INITIAL_VALUES = {
     project: 'inbox',
 }
 
-function RenderComponent({ close }: { close: React.ReactNode }) {
+function RenderComponent({
+    close,
+    initialProject = 'inbox',
+}: {
+    close: React.ReactNode
+    initialProject?: string
+}) {
     const mutation = useToCreateTask()
 
     return (
         <>
             <Formik
-                initialValues={INITIAL_VALUES}
+                initialValues={{ ...INITIAL_VALUES, project: initialProject }}
                 validate={validateTask}
                 onSubmit={(values, helpers) => {
                     mutation.mutate({
@@ -37,7 +43,7 @@ function RenderComponent({ close }: { close: React.ReactNode }) {
     )
 }
 
-function AddTask() {
+function AddTask({ initialProject = 'inbox' }: { initialProject?: string }) {
     return (
         <Disclosure>
             {({ open }) => (
@@ -59,6 +65,7 @@ function AddTask() {
                     <Disclosure.Panel className="focus:outline-none">
                         {({ close }) => (
                             <RenderComponent
+                                initialProject={initialProject}
                                 close={
                                     <button
                                         type="button"
