@@ -58,7 +58,7 @@ function AddTaskDialog() {
                         className="fixed inset-0 z-10 bg-black/30"
                     />
 
-                    <Dialog.Panel className="relative z-20 h-full max-h-[min(400px,calc(100%-2rem))] w-full max-w-[min(700px,calc(100%-2rem))] overflow-auto rounded-md border border-gray-800 bg-gray-800 p-5 shadow-md shadow-gray-800 sm:p-10">
+                    <Dialog.Panel className="relative z-20 flex h-full max-h-[min(400px,calc(100%-2rem))] w-full max-w-[min(700px,calc(100%-2rem))] flex-col overflow-auto rounded-md border border-gray-800 bg-gray-800 p-5 shadow-md shadow-gray-800 sm:p-10">
                         <Dialog.Title
                             as="h4"
                             className="mb-6 font-semibold tracking-wide text-white"
@@ -86,7 +86,10 @@ function AddTaskDialog() {
                                 isSubmitting,
                                 isValid,
                             }) => (
-                                <Form noValidate className="space-y-3 text-sm">
+                                <Form
+                                    noValidate
+                                    className="flex basis-full flex-col gap-y-3 text-sm"
+                                >
                                     <div className="space-y-3">
                                         <Field
                                             type="text"
@@ -133,7 +136,16 @@ function AddTaskDialog() {
                                         />
                                         <ProjectPicker isDialog />
                                     </div>
-                                    <div className="flex justify-end gap-x-2 pt-2">
+                                    {submitCount > 0 &&
+                                        errorKeys.map((er) => (
+                                            <ErrorMessage
+                                                name={er}
+                                                key={er}
+                                                component="span"
+                                                className="block text-skin-main before:content-['*']"
+                                            />
+                                        ))}
+                                    <div className="mt-auto flex justify-end gap-x-2 pt-2">
                                         <button
                                             type="button"
                                             className="rounded border border-gray-800 bg-transparent px-3 py-1.5 font-semibold text-white transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-gray-800"
@@ -152,15 +164,6 @@ function AddTaskDialog() {
                                             Submit
                                         </button>
                                     </div>
-                                    {submitCount > 0 &&
-                                        errorKeys.map((er) => (
-                                            <ErrorMessage
-                                                name={er}
-                                                key={er}
-                                                component="span"
-                                                className="block text-skin-main before:content-['*']"
-                                            />
-                                        ))}
                                 </Form>
                             )}
                         </Formik>

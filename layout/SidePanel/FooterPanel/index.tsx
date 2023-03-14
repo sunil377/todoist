@@ -98,7 +98,7 @@ function FooterSidePanel() {
                     >
                         <div className="fixed inset-0 bg-black/30" />
 
-                        <Dialog.Panel className="fixed h-full max-h-[min(450px,calc(100%-2rem))] w-full max-w-[min(500px,calc(100%-2rem))] overflow-auto rounded bg-gray-800 p-5 text-sm shadow-md shadow-gray-800 sm:p-10">
+                        <Dialog.Panel className="fixed flex h-full max-h-[min(550px,calc(100%-2rem))] w-full max-w-[min(500px,calc(100%-2rem))] flex-col overflow-auto rounded bg-gray-800 p-5 text-sm shadow-md shadow-gray-800 sm:p-10">
                             <Dialog.Title
                                 as="h4"
                                 className="mb-4 font-semibold text-white"
@@ -134,7 +134,10 @@ function FooterSidePanel() {
                                     errors,
                                     submitCount,
                                 }) => (
-                                    <Form noValidate>
+                                    <Form
+                                        noValidate
+                                        className="flex basis-full flex-col"
+                                    >
                                         <Field
                                             type="text"
                                             name="title"
@@ -149,7 +152,17 @@ function FooterSidePanel() {
 
                                         <ColorPicker />
 
-                                        <section className="mt-4 flex justify-end gap-x-2 font-semibold text-white">
+                                        {submitCount > 0 &&
+                                            ['title', 'color'].map((t) => (
+                                                <ErrorMessage
+                                                    name={t}
+                                                    key={t}
+                                                    component="div"
+                                                    className='mt-4 block text-skin-main before:content-["*"]'
+                                                />
+                                            ))}
+
+                                        <section className="mt-auto flex justify-end gap-x-2 font-semibold text-white">
                                             <button
                                                 type="button"
                                                 className="rounded bg-transparent px-3 py-1.5 transition-colors hover:bg-white/10 focus:outline-none focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-gray-800"
@@ -168,15 +181,6 @@ function FooterSidePanel() {
                                                 Submit
                                             </button>
                                         </section>
-                                        {submitCount > 0 &&
-                                            ['title', 'color'].map((t) => (
-                                                <ErrorMessage
-                                                    name={t}
-                                                    key={t}
-                                                    component="span"
-                                                    className='block text-skin-main before:content-["*"]'
-                                                />
-                                            ))}
                                     </Form>
                                 )}
                             </Formik>
