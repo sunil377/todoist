@@ -41,7 +41,6 @@ function TaskForm({
                         autoComplete="off"
                         autoCapitalize="none"
                         required
-                        autoFocus
                         disabled={isSubmitting}
                         aria-invalid={submitCount > 0 && !!errors.description}
                     />
