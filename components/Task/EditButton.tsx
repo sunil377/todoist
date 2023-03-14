@@ -9,6 +9,7 @@ function EditButton({ onEdit }: { onEdit: () => void }) {
                     className={clsx('w-full py-1 px-3 text-start text-sm', {
                         'bg-gray-100': active,
                     })}
+                    onClick={onEdit}
                 >
                     Edit
                 </button>

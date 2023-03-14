@@ -90,7 +90,7 @@ function FooterSidePanel() {
                     >
                         <div className="fixed inset-0 bg-black/30" />
 
-                        <Dialog.Panel className="fixed h-auto w-full max-w-[min(500px,calc(100%-2*2.24rem))] overflow-auto rounded bg-gray-800 p-5 text-sm shadow-md shadow-gray-800 sm:p-10">
+                        <Dialog.Panel className="fixed h-auto w-full max-w-[min(500px,calc(100%-2rem))] overflow-auto rounded bg-gray-800 p-5 text-sm shadow-md shadow-gray-800 sm:p-10">
                             <Dialog.Title
                                 as="h4"
                                 className="mb-4 font-semibold text-white"

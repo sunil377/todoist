@@ -56,7 +56,7 @@ function ProfileDropDown() {
                 </button>
             </Menu.Button>
 
-            <Menu.Items className="absolute top-full right-0 z-dropdown flex w-60 min-w-max translate-y-4 flex-col items-start divide-y rounded border bg-white px-1.5 py-2 text-xsm  text-gray-500 shadow-inner focus:outline-none">
+            <Menu.Items className="z-dropdown absolute top-full right-0 flex w-60 min-w-max translate-y-1 flex-col items-start divide-y rounded border border-gray-300 bg-white px-1.5 py-2 text-xsm text-gray-500 shadow-md shadow-gray-300 focus:outline-none">
                 <Menu.Item>
                     {({ active }) => (
                         <button
@@ -76,12 +76,12 @@ function ProfileDropDown() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="place-self-center rounded-full p-4">
+                                    <div className="place-self-center rounded-full bg-gray-300 p-4">
                                         <FaUser className="text-3xl" />
                                     </div>
                                 )}
                                 <div className="flex flex-col justify-center tracking-wide">
-                                    <span className="font-bold text-gray-900">
+                                    <span className="font-bold capitalize text-gray-900">
                                         {username}
                                     </span>
                                     <span className="font-normal">
