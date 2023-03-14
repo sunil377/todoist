@@ -7,15 +7,11 @@
         "turbo": "next dev --turbo",
         "build": "next build",
         "start": "next start",
-        "lint": "next lint",
-        "test": "jest --watch",
-        "coverage": "jest --coverage",
-        "analyze": "ANALYZE=true next build"
+        "lint": "next lint"
     },
     "dependencies": {
         "@headlessui/react": "^1.7.7",
         "@next/font": "^13.1.6",
-        "@types/jest": "^29.2.6",
         "@types/node": "18.11.18",
         "@types/react": "18.0.26",
         "@types/react-dom": "18.0.10",
@@ -40,17 +36,12 @@
     },
     "devDependencies": {
         "@svgr/webpack": "^6.5.1",
-        "@testing-library/jest-dom": "^5.16.5",
-        "@testing-library/react": "^13.4.0",
         "@types/lodash": "^4.14.191",
         "autoprefixer": "^10.4.13",
         "formik": "latest",
-        "jest": "^29.3.1",
-        "jest-environment-jsdom": "^29.3.1",
         "prettier": "^2.8.2",
         "prettier-plugin-tailwindcss": "^0.2.1",
-        "tailwindcss": "^3.2.4",
-        "ts-jest": "^29.0.5"
+        "tailwindcss": "^3.2.4"
     },
     "packageManager": "yarn@3.3.1"
 }

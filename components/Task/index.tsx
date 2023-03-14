@@ -10,19 +10,15 @@ import DateDisplay from './DateDisplay'
 import DeleteButton from './DeleteButton'
 import EditButton from './EditButton'
 
-function Task({ title, dueDate, description, id }: Omit<ITask, 'project'>) {
+function Task(props: ITask) {
     const [stage, setStage] = useState<'display' | 'edit'>('display')
 
+    function handleEdit() {
+        setStage('edit')
+    }
+
     if (stage === 'edit') {
-        return (
-            <UpdateTask
-                handleClose={() => setStage('display')}
-                title={title}
-                dueDate={dueDate}
-                description={description}
-                id={id}
-            />
-        )
+        return <UpdateTask handleClose={() => setStage('display')} {...props} />
     }
 
     return (
@@ -37,11 +33,11 @@ function Task({ title, dueDate, description, id }: Omit<ITask, 'project'>) {
                 >
                     <DropIcon aria-hidden />
                 </div>
-                <CompletedCheckbox id={id} />
+                <CompletedCheckbox id={props.id} />
 
                 <div className="flex basis-full flex-col justify-center">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-xsm">{title}</h3>
+                        <h3 className="text-xsm">{props.title}</h3>
                         <div className="invisible inline-flex gap-x-2 group-focus-within:visible group-hover:visible">
                             <button
                                 className="tooltip relative rounded-sm p-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-black"
@@ -68,15 +64,15 @@ function Task({ title, dueDate, description, id }: Omit<ITask, 'project'>) {
                                 </Menu.Button>
 
                                 <Menu.Items className="z-tooltip absolute right-0 flex w-56 flex-col rounded border border-gray-300 bg-white py-2 text-start text-gray-600 outline-none">
-                                    <EditButton />
-                                    <DeleteButton id={id} />
+                                    <EditButton onEdit={handleEdit} />
+                                    <DeleteButton id={props.id} />
                                 </Menu.Items>
                             </Menu>
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500">{description}</p>
-                    <DateDisplay dueDate={dueDate} />
+                    <p className="text-xs text-gray-500">{props.description}</p>
+                    <DateDisplay dueDate={props.dueDate} />
                 </div>
             </li>
         </>

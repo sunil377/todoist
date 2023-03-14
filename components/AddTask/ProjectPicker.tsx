@@ -1,39 +1,14 @@
 import { Combobox, Popover } from '@headlessui/react'
 import clsx from 'clsx'
-import { useAuth } from 'context/AuthContext'
-import { onSnapshot } from 'firebase/firestore'
 import { useField, useFormikContext } from 'formik'
-import { getProjectCollectionRef } from 'hooks/services'
-import { IProject } from 'index'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment } from 'react'
 import { FaInbox } from 'react-icons/fa'
 import { HiChevronDown } from 'react-icons/hi'
 import { MdCheck } from 'react-icons/md'
+import { usePicker } from './hooks'
 
-function ProjectPicker() {
-    const [query, setQuery] = useState('')
-    const [tags, setTags] = useState<Array<IProject>>([])
-    const currentUser = useAuth()
-
-    const filterTags = tags.filter(({ title }) =>
-        title.toLowerCase().includes(query.toLowerCase()),
-    )
-
-    useEffect(() => {
-        if (!currentUser) {
-            return
-        }
-        return onSnapshot(getProjectCollectionRef(currentUser.uid), (res) => {
-            let p: Array<IProject> = []
-            res.forEach((t) => {
-                if (t.exists()) {
-                    const result = { id: t.id, ...t.data() } as IProject
-                    p = [result, ...p]
-                }
-            })
-            setTags(p)
-        })
-    }, [currentUser])
+function ProjectPicker({ isDialog = false }) {
+    const { query, setQuery, filterTags } = usePicker()
 
     const [field] = useField('project')
     const { setFieldValue } = useFormikContext()
@@ -42,7 +17,12 @@ function ProjectPicker() {
         <Popover as="div" className="relative">
             <Popover.Button
                 type="button"
-                className="inline-flex items-center gap-x-1 rounded border border-blue-300 px-2.5 py-1.5 text-xs font-medium capitalize text-gray-800 focus:outline-none focus-visible:border-blue-500 focus-visible:bg-blue-100"
+                className={clsx(
+                    'inline-flex items-center gap-x-1 rounded border border-blue-300 bg-white px-2.5 py-1.5 capitalize focus:outline-none focus-visible:border-blue-300 focus-visible:ring focus-visible:ring-blue-300 focus-visible:ring-offset-2',
+                    {
+                        'ring-offset-gray-800': isDialog,
+                    },
+                )}
             >
                 {field.value.toLowerCase() === 'inbox' && (
                     <FaInbox aria-hidden className="text-base text-blue-500" />
@@ -51,7 +31,7 @@ function ProjectPicker() {
                 <HiChevronDown aria-label="down arrow" className="text-base" />
             </Popover.Button>
 
-            <Popover.Panel className="absolute right-0 w-[240px] overflow-y-auto rounded-md border bg-white text-xsm">
+            <Popover.Panel className="absolute right-0 top-[calc(100%+0.5rem)] w-[240px] overflow-y-auto rounded-md border bg-white text-xsm shadow-md">
                 {({ close }) => (
                     <Combobox
                         value={field.value}
@@ -70,7 +50,7 @@ function ProjectPicker() {
                             placeholder="Type a project"
                         />
 
-                        <Combobox.Options static className="border-t">
+                        <Combobox.Options static className="divide-y border-t">
                             {filterTags.map((tag) => (
                                 <Combobox.Option
                                     key={tag.id}

@@ -1,7 +1,8 @@
 import AddTask from '@/components/AddTask'
 import FullScreenLoader, { Spinner } from '@/components/FullScreenLoader'
+import NotFound from '@/components/NotFound'
 import Task from '@/components/Task'
-import { adminAuth, adminDB } from '@/config/firebaseAdmin'
+import { adminAuth } from '@/config/firebaseAdmin'
 import { NextPageWithLayout } from '@/pages/_app'
 import { useAuth } from 'context/AuthContext'
 import { onSnapshot, query, where } from 'firebase/firestore'
@@ -16,12 +17,8 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next'
 import { useRouter } from 'next/router'
 import nookies from 'nookies'
 import { Fragment, useEffect, useState } from 'react'
-import NotFound from './NotFound'
 
-const Project: NextPageWithLayout = function Project(
-    props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) {
-    const { statusCode } = props
+function useProjectTasks() {
     const [tags, setTags] = useState<IProject | null>(null)
     const [isLoading, setLoading] = useState(true)
     const [error, setError] = useState('')
@@ -50,9 +47,17 @@ const Project: NextPageWithLayout = function Project(
         )
     }, [currentUser, slug])
 
-    if (statusCode) {
-        return <NotFound statusCode={statusCode} />
+    return {
+        tags,
+        isLoading,
+        error,
     }
+}
+
+const Project: NextPageWithLayout = function Project(
+    props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
+    const { error, isLoading, tags } = useProjectTasks()
 
     switch (true) {
         case isLoading:
@@ -60,6 +65,9 @@ const Project: NextPageWithLayout = function Project(
 
         case !!error:
             return <div role="alert">{error}</div>
+
+        case !tags:
+            return <NotFound statusCode={404} />
 
         default:
             return (
@@ -141,32 +149,12 @@ Project.getLayout = function (page) {
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     const cookies = nookies.get(ctx)
     const token = cookies.token
-    const slug = ctx.query.id
 
     try {
-        const { uid } = await adminAuth.verifyIdToken(token)
+        await adminAuth.verifyIdToken(token)
 
-        try {
-            const response = await adminDB
-                .doc(uid + '/projects/projects/' + slug)
-                .get()
-
-            if (response.exists) {
-                return {
-                    props: {},
-                }
-            }
-            return {
-                props: {
-                    statusCode: 404,
-                },
-            }
-        } catch (error) {
-            return {
-                props: {
-                    statusCode: 500,
-                },
-            }
+        return {
+            props: {},
         }
     } catch (error) {
         return {

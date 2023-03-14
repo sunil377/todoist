@@ -54,7 +54,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         return onAuthStateChanged(
             auth,
-            async (user) => {
+            async function(user) {
                 let token = ''
                 if (user) {
                     try {
@@ -92,3 +92,4 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export { useAuth, AuthProvider as default }
+

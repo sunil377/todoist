@@ -1,7 +1,7 @@
 import { Menu } from '@headlessui/react'
 import clsx from 'clsx'
 
-function EditButton({ ...props }) {
+function EditButton({ onEdit }: { onEdit: () => void }) {
     return (
         <Menu.Item>
             {({ active }) => (

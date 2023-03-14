@@ -97,14 +97,7 @@ function OverdueTask({
                     </div>
                     <ul className="flex flex-col gap-y-0.5 border-t border-t-gray-200">
                         {data.map((task) => (
-                            <Task
-                                key={task.id}
-                                title={task.title}
-                                description={task.description}
-                                dueDate={task.dueDate}
-                                id={task.id}
-                                createdAt={task.createdAt}
-                            />
+                            <Task key={task.id} {...task} />
                         ))}
                     </ul>
                 </section>
@@ -135,14 +128,7 @@ function OngoingTask({
             return (
                 <ul className="flex flex-col gap-y-0.5 pb-3">
                     {data.map((task) => (
-                        <Task
-                            key={task.id}
-                            title={task.title}
-                            description={task.description}
-                            dueDate={task.dueDate}
-                            id={task.id}
-                            createdAt={task.createdAt}
-                        />
+                        <Task key={task.id} {...task} />
                     ))}
                 </ul>
             )

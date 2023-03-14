@@ -1,4 +1,4 @@
-import AddTaskNavButton from '@/components/AddTask/AddTaskNavButton'
+import AddTaskDialog from '@/components/AddTask/AddTaskDialog'
 import { default as ToolTip } from '@/components/Tooltip'
 import { Switch } from '@headlessui/react'
 import clsx from 'clsx'
@@ -23,27 +23,27 @@ function MainLayout({ children }: { children: React.ReactNode }) {
     const [isMenuOpened, setMenuOpen] = useState(false)
     const router = useRouter()
 
+    //Listening to all go to keydown
     useGoToListener()
 
-    const onkeydown = useCallback((e: KeyboardEvent) => {
-        if (e.key === 'm') {
-            setMenuOpen((prev) => !prev)
-        }
-    }, [])
-
+    // seting isMenuOpen to false every time page navigate to anthor page
     useEffect(() => {
         function onComplete() {
             setMenuOpen(false)
         }
-
         router.events.on('routeChangeComplete', onComplete)
-
         return () => {
             router.events.off('routeChangeComplete', onComplete)
         }
     }, [router.events])
 
-    useKeypadListener(onkeydown)
+    useKeypadListener(
+        useCallback((e: KeyboardEvent) => {
+            if (e.key === 'm') {
+                setMenuOpen((prev) => !prev)
+            }
+        }, []),
+    )
 
     return (
         <div className="mx-auto flex min-h-screen max-w-screen-2xl flex-col">
@@ -116,7 +116,7 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                     role="group"
                     aria-label="Menu"
                 >
-                    <AddTaskNavButton />
+                    <AddTaskDialog />
 
                     <button className="tooltip relative rounded-full p-2 hover:bg-white/10 focus:outline-none focus-visible:bg-white/20">
                         <ToolTip className="top-full left-1/2 -translate-x-1/2 translate-y-2 after:-top-1 after:left-1/2 after:-translate-x-1/2">
