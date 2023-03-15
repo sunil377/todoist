@@ -13,7 +13,6 @@ function ProjectPicker({ isDialog = false }) {
 
     const [field] = useField('project')
     const { setFieldValue } = useFormikContext()
-    console.log(field)
 
     return (
         <Popover as="div" className="relative">
@@ -52,7 +51,10 @@ function ProjectPicker({ isDialog = false }) {
                             placeholder="Type a project"
                         />
 
-                        <Combobox.Options static className="divide-y border-t">
+                        <Combobox.Options
+                            static
+                            className="max-h-28 divide-y overflow-auto border-t"
+                        >
                             {filterTags.map((tag) => (
                                 <Combobox.Option
                                     key={tag.id}

@@ -6,10 +6,9 @@ import { useAuth } from 'context/AuthContext'
 import { signOut } from 'firebase/auth'
 import NextImage from 'next/image'
 import { useRouter } from 'next/router'
-import { Fragment, useCallback } from 'react'
+import { forwardRef, Fragment, useCallback } from 'react'
 import { FaUser } from 'react-icons/fa'
 import { MdLogout, MdSettings } from 'react-icons/md'
-import { useProfileListener } from './useProfileListener'
 
 function useLogout() {
     const router = useRouter()
@@ -24,9 +23,11 @@ function useLogout() {
     }, [router])
 }
 
-function ProfileDropDown() {
+const ProfileDropDown = forwardRef<HTMLButtonElement>(function ProfileDropDown(
+    {},
+    ref,
+) {
     const currentUser = useAuth()
-    const menuButtonRef = useProfileListener()
     const username =
         currentUser?.displayName ?? currentUser?.email?.replace(/@.+/gi, '')!
 
@@ -37,7 +38,7 @@ function ProfileDropDown() {
             <Menu.Button as={Fragment}>
                 <button
                     className="tooltip relative rounded-full p-2 hover:bg-white/10 focus:outline-none focus-visible:bg-white/20"
-                    ref={menuButtonRef}
+                    ref={ref}
                 >
                     <ToolTip className="top-full right-0 translate-y-2 after:-top-1 after:right-2.5">
                         Open Profile Menu <kbd>O</kbd> then <kbd>U</kbd>
@@ -114,6 +115,6 @@ function ProfileDropDown() {
             </Menu.Items>
         </Menu>
     )
-}
+})
 
 export default ProfileDropDown

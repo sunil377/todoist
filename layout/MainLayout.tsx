@@ -7,37 +7,44 @@ import { useKeypadListener } from 'hooks/useKeypadListener'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
-import { AiOutlineQuestionCircle } from 'react-icons/ai'
 import { FaHome } from 'react-icons/fa'
 import { MdOutlineClose, MdOutlineMenu } from 'react-icons/md'
+import CommandMenu from './CommandMenu'
 import ProfileDropDown from './ProfileDropDown'
 import FooterSidePanel from './SidePanel/FooterPanel'
 import HeaderSidePanel from './SidePanel/HeaderPanel'
+import { useProfileListener } from './useProfileListener'
 
 function MainLayout({ children }: { children: React.ReactNode }) {
     const [isMenuOpened, setMenuOpen] = useState(false)
     const router = useRouter()
+    const profileBtnRef = useProfileListener()
+
+    const handleMenu = useCallback(() => {
+        setMenuOpen((prev) => !prev)
+    }, [])
+
+    const handleProfileMenu = useCallback(() => {
+        profileBtnRef.current?.click()
+    }, [])
 
     //Listening to all go to keydown
     useGoToListener()
 
     // seting isMenuOpen to false every time page navigate to anthor page
     useEffect(() => {
-        function onComplete() {
-            setMenuOpen(false)
-        }
-        router.events.on('routeChangeComplete', onComplete)
-        return () => {
-            router.events.off('routeChangeComplete', onComplete)
-        }
-    }, [router.events])
+        setMenuOpen(false)
+    }, [router.basePath])
 
     useKeypadListener(
-        useCallback((e: KeyboardEvent) => {
-            if (e.key === 'm') {
-                setMenuOpen((prev) => !prev)
-            }
-        }, []),
+        useCallback(
+            (e: KeyboardEvent) => {
+                if (e.key === 'm') {
+                    handleMenu()
+                }
+            },
+            [handleMenu],
+        ),
     )
 
     return (
@@ -84,14 +91,12 @@ function MainLayout({ children }: { children: React.ReactNode }) {
                 >
                     <AddTaskDialog />
 
-                    <button className="tooltip relative rounded-full p-2 hover:bg-white/10 focus:outline-none focus-visible:bg-white/20">
-                        <ToolTip className="top-full right-0 translate-y-2 after:-top-1 after:right-2.5">
-                            Open help & info <kbd>O</kbd> then <kbd>H</kbd>
-                        </ToolTip>
-                        <AiOutlineQuestionCircle className="text-lg md:text-xl" />
-                    </button>
+                    <CommandMenu
+                        handleMenu={handleMenu}
+                        handleProfileMenu={handleProfileMenu}
+                    />
 
-                    <ProfileDropDown />
+                    <ProfileDropDown ref={profileBtnRef} />
                 </div>
             </nav>
             {isMenuOpened && (
